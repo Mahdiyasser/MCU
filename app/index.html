@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- Primary Meta -->
+  <title>MCU Universe — The Ultimate Marvel Tracker</title>
+  <meta name="title" content="MCU Universe — The Ultimate Marvel Tracker">
+  <meta name="description" content="Track every Marvel Cinematic Universe film & series. Build your watchlist, follow your journey, explore the cast. The definitive MCU database by Mahdi Yasser.">
+  <meta name="author" content="Mahdi Yasser">
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="MCU, Marvel, Cinematic Universe, Iron Man, Avengers, Disney+, tracker, watchlist, movies, series, Mahdi Yasser, Mahdi Yasser MCU">
+  <meta name="theme-color" content="#0a0a0f">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mcu.mahdiyasser.site/app/">
+  <meta property="og:title" content="MCU Universe — The Ultimate Marvel Tracker">
+  <meta property="og:description" content="Track every MCU film & series. Build your watchlist, follow your journey, explore the cast. The definitive MCU database.">
+  <meta property="og:image" content="https://mcu.mahdiyasser.site/assets/app/banner.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="MCU Universe">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://mcu.mahdiyasser.site/app/">
+  <meta name="twitter:title" content="MCU Universe — The Ultimate Marvel Tracker">
+  <meta name="twitter:description" content="Track every MCU film & series. Build your watchlist, follow your journey, explore the cast.">
+  <meta name="twitter:image" content="https://mcu.mahdiyasser.site/assets/app/banner.png">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://mcu.mahdiyasser.site/app/">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/favicon.ico">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "MCU Universe",
+    "url": "https://mcu.mahdiyasser.site/",
+    "description": "The definitive MCU tracker — films, series, cast, and your personal watching journey.",
+    "author": {
+      "@type": "Person",
+      "name": "Mahdi Yasser",
+      "url": "https://mahdiyasser.site/"
+    }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== LOADING SCREEN ========== -->
+<div id="loader">
+  <div class="loader-inner">
+    <div class="loader-arc"></div>
+    <div class="loader-text">INITIALIZING</div>
+    <div class="loader-sub">Marvel Cinematic Universe Database</div>
+  </div>
+</div>
+
+<!-- ========== ACCOUNT PANEL ========== -->
+<div id="account-panel" class="panel hidden">
+  <div class="panel-backdrop" onclick="closePanel('account-panel')"></div>
+  <div class="panel-box">
+    <button class="panel-close" onclick="closePanel('account-panel')"><i class="fa-solid fa-xmark"></i></button>
+    <div class="panel-header">
+      <div class="panel-icon"><i class="fa-solid fa-user-shield"></i></div>
+      <h2>Your Profile</h2>
+    </div>
+    <div id="account-content"></div>
+  </div>
+</div>
+
+<!-- ========== IMPORT PANEL ========== -->
+<div id="import-panel" class="panel hidden">
+  <div class="panel-backdrop"></div>
+  <div class="panel-box">
+    <div class="panel-header">
+      <div class="panel-icon import-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+      <h2>Import Profile</h2>
+      <p>Load this profile as your own on this device</p>
+    </div>
+    <div id="import-content"></div>
+  </div>
+</div>
+
+<!-- ========== SHARE PANEL ========== -->
+<div id="share-panel" class="panel hidden">
+  <div class="panel-backdrop" onclick="closePanel('share-panel')"></div>
+  <div class="panel-box">
+    <button class="panel-close" onclick="closePanel('share-panel')"><i class="fa-solid fa-xmark"></i></button>
+    <div class="panel-header">
+      <div class="panel-icon share-icon"><i class="fa-solid fa-share-nodes"></i></div>
+      <h2>Share Your Journey</h2>
+      <p>Anyone with this link can view your progress</p>
+    </div>
+    <div id="share-content"></div>
+  </div>
+</div>
+
+<!-- ========== DETAIL PANEL ========== -->
+<div id="detail-panel" class="panel hidden">
+  <div class="panel-backdrop" onclick="closePanel('detail-panel')"></div>
+  <div class="panel-box panel-box--wide">
+    <button class="panel-back hidden" id="detail-back-btn" onclick="modalGoBack()"><i class="fa-solid fa-arrow-left"></i></button>
+    <button class="panel-close" onclick="closePanel('detail-panel')"><i class="fa-solid fa-xmark"></i></button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- ========== STAR PANEL ========== -->
+<div id="star-panel" class="panel hidden">
+  <div class="panel-backdrop" onclick="closePanel('star-panel')"></div>
+  <div class="panel-box">
+    <button class="panel-back hidden" id="star-back-btn" onclick="modalGoBack()"><i class="fa-solid fa-arrow-left"></i></button>
+    <button class="panel-close" onclick="closePanel('star-panel')"><i class="fa-solid fa-xmark"></i></button>
+    <div id="star-content"></div>
+  </div>
+</div>
+
+<!-- ========== TOAST ========== -->
+<div id="toast-container"></div>
+
+<!-- ========== HEADER ========== -->
+<header id="site-header">
+  <div class="header-inner">
+    <a class="header-logo" href="#" onclick="switchTab('home'); return false;">
+      <img src="/assets/app/logo.png" alt="MCU Universe" class="header-logo-img">
+    </a>
+
+    <div class="header-search-wrap" id="header-search-wrap">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="global-search" placeholder="Search films, series, stars…" autocomplete="off">
+      <div id="search-results-drop" class="search-drop hidden"></div>
+    </div>
+
+    <div class="header-actions">
+      <button class="hdr-btn" onclick="openSharePanel()" title="Share Your Journey">
+        <i class="fa-solid fa-share-nodes"></i>
+      </button>
+      <button class="hdr-btn hdr-account" onclick="openAccountPanel()" title="Profile">
+        <span id="hdr-avatar"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main id="app">
+
+  <!-- ===== TAB: HOME ===== -->
+  <section id="tab-home" class="tab-section active">
+    <div class="hero-banner">
+      <div class="hero-banner-bg"></div>
+    <div class="hero-bg-grid"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow"><span class="phase-badge">MULTIVERSE SAGA</span></div>
+        <h1 class="hero-title">EVERY STORY.<br>ONE UNIVERSE.</h1>
+        <p class="hero-sub">Track your Marvel journey across <strong id="hero-total">0</strong> films & series. Build your watchlist. Share your progress.</p>
+        <div class="hero-cta-row">
+          <button class="btn-primary" onclick="switchTab('journey')">
+            <i class="fa-solid fa-rocket"></i> Start Your Journey
+          </button>
+          <button class="btn-ghost" onclick="switchTab('timeline')">
+            <i class="fa-solid fa-layer-group"></i> Browse Timeline
+          </button>
+        </div>
+      </div>
+      <div class="hero-stats-row">
+        <div class="hero-stat">
+          <span id="stat-watched" class="stat-num">0</span>
+          <span class="stat-label">Watched</span>
+        </div>
+        <div class="hero-stat">
+          <span id="stat-wishlist" class="stat-num">0</span>
+          <span class="stat-label">Wishlisted</span>
+        </div>
+        <div class="hero-stat">
+          <span id="stat-total-home" class="stat-num">0</span>
+          <span class="stat-label">Total Titles</span>
+        </div>
+        <div class="hero-stat">
+          <span id="stat-pct" class="stat-num">0%</span>
+          <span class="stat-label">Complete</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Phase Overview -->
+    <div class="section-wrap">
+      <div class="section-header">
+        <h2 class="section-title">By Phase</h2>
+        <button class="section-link" onclick="switchTab('timeline')">View All <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div id="phase-overview" class="phase-overview-grid"></div>
+    </div>
+
+    <!-- Currently Watching -->
+    <div class="section-wrap" id="currently-watching-section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-play txt-red"></i> Currently Watching</h2>
+        <button class="section-link" onclick="switchTab('journey')">Journey <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div id="currently-watching-list" class="cards-row"></div>
+    </div>
+
+    <!-- New & Upcoming -->
+    <div class="section-wrap">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-calendar-days txt-gold"></i> Upcoming</h2>
+      </div>
+      <div id="upcoming-list" class="cards-row"></div>
+    </div>
+
+    <!-- About / Made By -->
+    <div class="section-wrap">
+      <div class="about-footer-card">
+        <div class="afc-left">
+          <img src="/assets/app/me.png" alt="Mahdi Yasser" class="afc-avatar afc-avatar-img">
+          <div class="afc-text">
+            <span class="afc-name">Mahdi Yasser</span>
+            <span class="afc-role">16-year-old dev, server nerd &amp; Marvel fan <i class="fa-solid fa-spider"></i></span>
+            <span class="afc-bio">Built this database solo. All data, images, and code — hand-crafted.</span>
+          </div>
+        </div>
+        <div class="afc-links">
+          <a href="https://mahdiyasser.site" target="_blank" class="afc-btn"><i class="fa-solid fa-house"></i> Website</a>
+          <a href="https://github.com/Mahdiyasser" target="_blank" class="afc-btn"><i class="fa-brands fa-github"></i> GitHub</a>
+          <a href="https://www.instagram.com/mahdiyasser1/" target="_blank" class="afc-btn"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          <a href="https://mahdiyasser.site/contact/" target="_blank" class="afc-btn afc-btn--red"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: TIMELINE ===== -->
+  <section id="tab-timeline" class="tab-section">
+    <div class="tab-hero-mini">
+      <h1>MCU TIMELINE</h1>
+      <p>Every title — in release or chronological order</p>
+    </div>
+
+    <div class="timeline-controls">
+      <div class="order-toggle">
+        <button class="order-btn active" id="btn-release" onclick="setOrder('release')">Release Order</button>
+        <button class="order-btn" id="btn-chrono" onclick="setOrder('chrono')">Chronological</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all" onclick="setTypeFilter('all',this)">All</button>
+        <button class="filter-btn" data-filter="movie" onclick="setTypeFilter('movie',this)">Movies</button>
+        <button class="filter-btn" data-filter="series" onclick="setTypeFilter('series',this)">Series</button>
+        <button class="filter-btn" data-filter="special_presentation" onclick="setTypeFilter('special_presentation',this)">Specials</button>
+      </div>
+    </div>
+
+    <div id="timeline-phases" class="timeline-phases-wrap"></div>
+  </section>
+
+  <!-- ===== TAB: JOURNEY ===== -->
+  <section id="tab-journey" class="tab-section">
+    <div class="tab-hero-mini journey-hero-mini">
+      <div class="journey-hero-content">
+        <h1>YOUR JOURNEY</h1>
+        <p>Track progress like a game. Level up through the MCU.</p>
+      </div>
+      <div class="journey-xp-bar-wrap">
+        <div class="journey-level-badge" id="journey-level-badge">LVL 1</div>
+        <div class="journey-xp-info">
+          <span id="journey-xp-label">0 XP</span>
+          <span id="journey-xp-next">Next: Recruit</span>
+        </div>
+        <div class="xp-bar-outer">
+          <div class="xp-bar-inner" id="xp-bar-inner"></div>
+        </div>
+        <div class="journey-rank-name" id="journey-rank-name">Civilian</div>
+      </div>
+    </div>
+
+    <!-- Journey Achievements -->
+    <div class="section-wrap">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-trophy txt-gold"></i> Achievements</h2>
+      </div>
+      <div id="achievements-grid" class="achievements-grid"></div>
+    </div>
+
+    <!-- Journey Stats -->
+    <div class="section-wrap">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-chart-bar txt-red"></i> Your Stats</h2>
+      </div>
+      <div id="journey-stats-grid" class="journey-stats-grid"></div>
+    </div>
+
+    <!-- Watch Queue -->
+    <div class="section-wrap">
+      <div class="section-header">
+        <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Watch Queue</h2>
+        <button class="section-link" onclick="openNextToWatch()">Suggest Next <i class="fa-solid fa-wand-sparkles"></i></button>
+      </div>
+      <div id="watch-queue" class="timeline-phases-wrap"></div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: WISHLIST ===== -->
+  <section id="tab-wishlist" class="tab-section">
+    <div class="tab-hero-mini">
+      <h1>WISHLIST</h1>
+      <p>Titles you want to watch</p>
+    </div>
+    <div class="section-wrap">
+      <div id="wishlist-grid" class="cards-grid-main"></div>
+      <div id="wishlist-empty" class="empty-state hidden">
+        <i class="fa-solid fa-bookmark"></i>
+        <p>No wishlist items yet.</p>
+        <small>Browse the Timeline and hit the bookmark button to add titles.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: STARS ===== -->
+  <section id="tab-stars" class="tab-section">
+    <div class="tab-hero-mini">
+      <h1>CAST & CREW</h1>
+      <p id="stars-tab-count">Cast &amp; crew of the Marvel universe</p>
+    </div>
+    <div class="stars-controls">
+      <input type="text" id="stars-search" placeholder="Search cast & crew…" oninput="filterStars(this.value)">
+    </div>
+    <div id="stars-grid" class="stars-grid"></div>
+  </section>
+
+</main>
+
+<!-- ========== BOTTOM NAV ========== -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
+    <i class="fa-solid fa-house"></i>
+    <span>Home</span>
+  </button>
+  <button class="nav-btn" data-tab="timeline" onclick="switchTab('timeline')">
+    <i class="fa-solid fa-layer-group"></i>
+    <span>Timeline</span>
+  </button>
+  <button class="nav-btn" data-tab="journey" onclick="switchTab('journey')">
+    <i class="fa-solid fa-rocket"></i>
+    <span>Journey</span>
+  </button>
+  <button class="nav-btn" data-tab="wishlist" onclick="switchTab('wishlist')">
+    <i class="fa-solid fa-bookmark"></i>
+    <span>Wishlist</span>
+    <span id="wishlist-badge" class="nav-badge hidden">0</span>
+  </button>
+  <button class="nav-btn" data-tab="stars" onclick="switchTab('stars')">
+    <i class="fa-solid fa-star"></i>
+    <span>Stars</span>
+  </button>
+</nav>
+
+<script src="script.js"></script>
+</body>
+</html>

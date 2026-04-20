@@ -5,48 +5,48 @@
 
 'use strict';
 
-// ─── Constants ───────────────────────────────────────
-const STORAGE_KEY  = 'mcu_universe_v1';
-const VIEW_PARAM   = 'share';
-const BASE_URL     = 'https://mcu.mahdiyasser.site/';
+// ─── Constants (hydrated from app.json after load) ───
+let STORAGE_KEY  = 'mcu_universe_v1';   // app.json > meta.storage_key
+let VIEW_PARAM   = 'share';             // app.json > meta.share_param
+const IMPORT_PARAM = 'import';
+let BASE_URL     = 'https://mcu.mahdiyasser.site/app/'; // app.json > meta.base_url
+let XP_PER_WATCHED = 50;               // app.json > xp.xp_per_watched
+let PHASE_COMPLETION_BONUS  = 200;     // app.json > xp.phase_completion_bonus
+let SAGA_COMPLETION_BONUS   = 500;     // app.json > xp.saga_completion_bonus
+let ACHIEVEMENT_BONUS       = 100;     // app.json > xp.achievement_bonus
+let PHASE_BONUSES           = {};      // app.json > phase_bonuses
+let SAGA_BONUSES            = {};      // app.json > saga_bonuses
+let ACHIEVEMENT_BONUS_MAP   = {};      // built from app.json achievements[].bonus_xp
 
-// XP / Rank system
-const RANKS = [
-  { name: 'Civilian',      min: 0,    level: 1  },
-  { name: 'Recruit',       min: 50,   level: 2  },
-  { name: 'S.H.I.E.L.D. Agent', min: 150, level: 3 },
-  { name: 'Avenger',       min: 300,  level: 4  },
-  { name: 'Hero',          min: 500,  level: 5  },
-  { name: 'Superhero',     min: 750,  level: 6  },
-  { name: 'Guardian',      min: 1000, level: 7  },
-  { name: 'Champion',      min: 1300, level: 8  },
-  { name: 'Infinity Stone Holder', min: 1700, level: 9 },
-  { name: 'Sorcerer Supreme', min: 2200, level: 10 },
-  { name: 'Multiversal Legend', min: 3000, level: 11 },
-];
+// XP / Rank system — loaded from app.json
+let RANKS         = [];
+let ACHIEVEMENTS  = [];
+let PHASE_COLORS  = {};
+let TYPE_COLORS   = {};
+let TYPE_LABELS   = {};
+let APP_CONFIG    = null; // full app.json
+let AVATARS       = [];
+let AVATAR_BASE   = '/assets/app/avatars/';
 
-const ACHIEVEMENTS = [
-  { id: 'first_watch',  icon: '<i class="fa-solid fa-clapperboard"></i>', name: 'First Watch',      desc: 'Watch your first MCU title', req: s => s.watched.length >= 1 },
-  { id: 'phase1',       icon: '<i class="fa-solid fa-1"></i>', name: 'Phase One Complete', desc: 'Watch all Phase 1 titles', req: s => phaseComplete(s,'phase_1') },
-  { id: 'phase2',       icon: '<i class="fa-solid fa-2"></i>', name: 'Phase Two Complete', desc: 'Watch all Phase 2 titles', req: s => phaseComplete(s,'phase_2') },
-  { id: 'phase3',       icon: '<i class="fa-solid fa-3"></i>', name: 'Phase Three Complete', desc: 'Watch all Phase 3 titles', req: s => phaseComplete(s,'phase_3') },
-  { id: 'phase4',       icon: '<i class="fa-solid fa-4"></i>', name: 'Phase Four Complete', desc: 'Watch all Phase 4 titles', req: s => phaseComplete(s,'phase_4') },
-  { id: 'phase5',       icon: '<i class="fa-solid fa-5"></i>', name: 'Phase Five Complete', desc: 'Watch all Phase 5 titles', req: s => phaseComplete(s,'phase_5') },
-  { id: 'infinity_saga',icon: '<i class="fa-solid fa-infinity"></i>', name: 'Infinity Saga',    desc: 'Complete The Infinity Saga (Phases 1-3)', req: s => phaseComplete(s,'phase_1') && phaseComplete(s,'phase_2') && phaseComplete(s,'phase_3') },
-  { id: 'avengers4',    icon: '<i class="fa-solid fa-shield-halved"></i>', name: 'Avengers Assemble', desc: 'Watch all 4 Avengers films', req: s => ['mcu_006','mcu_011','mcu_019','mcu_022'].every(id => s.watched.includes(id)) },
-  { id: 'ironman3',     icon: '<i class="fa-solid fa-robot"></i>', name: 'Iron Man Trilogy', desc: 'Watch all Iron Man films', req: s => ['mcu_001','mcu_003','mcu_007'].every(id => s.watched.includes(id)) },
-  { id: 'thor3',        icon: '<i class="fa-solid fa-bolt"></i>', name: 'God of Thunder',   desc: 'Watch all Thor films', req: s => ['mcu_004','mcu_008','mcu_017','mcu_035'].every(id => s.watched.includes(id)) },
-  { id: 'cap3',         icon: '<i class="fa-solid fa-shield"></i>', name: 'First Avenger',    desc: 'Watch all Captain America films', req: s => ['mcu_005','mcu_009','mcu_013'].every(id => s.watched.includes(id)) },
-  { id: 'got2',         icon: '<i class="fa-solid fa-rocket"></i>', name: 'Guardians',         desc: 'Watch all Guardians films', req: s => ['mcu_010','mcu_015','mcu_042'].every(id => s.watched.includes(id)) },
-  { id: 'wishlist10',   icon: '<i class="fa-solid fa-thumbtack"></i>', name: 'Curator',           desc: 'Add 10 titles to wishlist', req: s => s.wishlist.length >= 10 },
-  { id: 'halfway',      icon: '<i class="fa-solid fa-person-running"></i>', name: 'Halfway There',     desc: 'Watch at least 30 titles', req: s => s.watched.length >= 30 },
-  { id: 'completionist',icon: '<i class="fa-solid fa-star"></i>', name: 'True Believer',     desc: 'Watch all released MCU titles', req: s => allReleasedWatched(s) },
-];
-
-// Phase color map
-const PHASE_COLORS = { phase_1:'#e23636', phase_2:'#f97316', phase_3:'#eab308', phase_4:'#22c55e', phase_5:'#3b82f6', phase_6:'#a855f7' };
-const TYPE_COLORS  = { movie: 'tag-movie', series: 'tag-series', special_presentation: 'tag-special', short: 'tag-special' };
-const TYPE_LABELS  = { movie: 'Movie', series: 'Series', special_presentation: 'Special', short: 'Short' };
+// Converts an app.json achievement req object into a live function
+function buildAchievementReq(req) {
+  switch (req.type) {
+    case 'watched_min':
+      return s => s.watched.length >= req.count;
+    case 'wishlist_min':
+      return s => s.wishlist.length >= req.count;
+    case 'phase_complete':
+      return s => phaseComplete(s, req.phase_id);
+    case 'phases_all_complete':
+      return s => req.phase_ids.every(pid => phaseComplete(s, pid));
+    case 'all_watched':
+      return s => req.mcu_ids.every(id => s.watched.includes(id));
+    case 'all_released_watched':
+      return s => allReleasedWatched(s);
+    default:
+      return () => false;
+  }
+}
 
 // ─── Global State ─────────────────────────────────────
 let MCU_DATA    = null; // from data.json + mcu.json
@@ -59,6 +59,103 @@ let currentFilter = 'all';
 let activeTab     = 'home';
 let searchTimeout = null;
 
+// ─── URL / Modal Navigation ───────────────────────────
+let _modalStack   = []; // stack of { type: 'title'|'star'|'profile'|'share', id }
+let _suppressPopState = false;
+
+function pushModalState(type, id) {
+  const params = new URLSearchParams(window.location.search);
+  // Build dl= from current modal if one is open
+  if (_modalStack.length > 0) {
+    const prev = _modalStack[_modalStack.length - 1];
+    params.set('dl', prev.id || prev.type);
+  } else {
+    params.delete('dl');
+  }
+  if (id) params.set('id', id);
+  else { params.delete('id'); params.set('id', type); }
+  _modalStack.push({ type, id });
+  history.pushState({ modal: type, id, stack: [..._modalStack] }, '', '?' + params.toString());
+}
+
+function popModalState() {
+  _modalStack.pop();
+  if (_modalStack.length > 0) {
+    const prev = _modalStack[_modalStack.length - 1];
+    const params = new URLSearchParams(window.location.search);
+    params.set('id', prev.id || prev.type);
+    params.delete('dl');
+    history.replaceState({ modal: prev.type, id: prev.id, stack: [..._modalStack] }, '', '?' + params.toString());
+  } else {
+    clearModalFromUrl();
+  }
+}
+
+function clearModalFromUrl() {
+  _modalStack = [];
+  const params = new URLSearchParams(window.location.search);
+  params.delete('id');
+  params.delete('dl');
+  const qs = params.toString();
+  history.replaceState({}, '', qs ? '?' + qs : window.location.pathname);
+}
+
+function syncTabToUrl(tab) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('t', tab);
+  params.delete('id');
+  params.delete('dl');
+  params.delete('find');
+  _modalStack = [];
+  history.pushState({ tab }, '', '?' + params.toString());
+}
+
+function syncSearchToUrl(q) {
+  const params = new URLSearchParams(window.location.search);
+  if (q && q.length >= 2) params.set('find', q);
+  else params.delete('find');
+  history.replaceState({}, '', '?' + params.toString());
+}
+
+function readUrlOnLoad() {
+  const params = new URLSearchParams(window.location.search);
+  const tab    = params.get('t');
+  const id     = params.get('id');
+  const find   = params.get('find');
+  const dl     = params.get('dl');
+
+  if (tab && ['home','timeline','journey','watchlist','stars'].includes(tab)) {
+    switchTabSilent(tab);
+  }
+
+  if (find) {
+    const input = document.getElementById('global-search');
+    if (input) {
+      input.value = find;
+      renderSearchResults(find);
+    }
+  }
+
+  if (id) {
+    // Restore deep link backing modal first
+    if (dl) {
+      const dlEntry = getEntry(dl);
+      const dlStar  = STARS_DATA?.stars.find(s => s.id === dl);
+      if (dlEntry) { _modalStack.push({ type: 'title', id: dl }); openDetailSilent(dl); }
+      else if (dlStar) { _modalStack.push({ type: 'star', id: dl }); openStarDetailSilent(dl); }
+    }
+    // Now open the primary modal
+    if (id === 'profile') openAccountPanelSilent();
+    else if (id === 'share') openSharePanelSilent();
+    else {
+      const entry = getEntry(id);
+      const star  = STARS_DATA?.stars.find(s => s.id === id);
+      if (entry) openDetailSilent(id);
+      else if (star) openStarDetailSilent(id);
+    }
+  }
+}
+
 // ─── Init ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
@@ -68,39 +165,107 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSearch();
   setupEventListeners();
 
+  // Restore URL state
+  readUrlOnLoad();
+
   // Loader out
   setTimeout(() => {
     const loader = document.getElementById('loader');
     loader && loader.classList.add('fade-out');
+    // Show import panel if triggered by ?import= link
+    if (window._pendingImport) {
+      openImportPanel(window._pendingImport);
+    }
   }, 600);
 });
 
 // ─── Data Loading ──────────────────────────────────────
 async function loadData() {
   try {
-    const [mcuRes, starsRes, dataRes] = await Promise.all([
-      fetch('./assets/mcu.json'),
-      fetch('./assets/stars.json'),
-      fetch('./assets/data.json'),
+    const [mcuRes, starsRes, dataRes, appRes] = await Promise.all([
+      fetch('/assets/mcu.json'),
+      fetch('/assets/stars.json'),
+      fetch('/assets/data.json'),
+      fetch('/assets/app/app.json'),
     ]);
     const mcu   = await mcuRes.json();
     const stars = await starsRes.json();
     const data  = await dataRes.json();
+    const app   = await appRes.json();
 
     MCU_DATA   = { ...data, ...mcu };
     STARS_DATA = stars;
+    APP_CONFIG = app;
+
+    // Hydrate top-level constants from app.json meta
+    if (app.meta?.storage_key)         STORAGE_KEY           = app.meta.storage_key;
+    if (app.meta?.share_param)         VIEW_PARAM            = app.meta.share_param;
+    if (app.meta?.import_param)        IMPORT_PARAM          = app.meta.import_param;
+    if (app.meta?.base_url)            BASE_URL              = app.meta.base_url;
+    if (app.xp?.xp_per_watched)        XP_PER_WATCHED        = app.xp.xp_per_watched;
+    if (app.xp?.phase_completion_bonus) PHASE_COMPLETION_BONUS = app.xp.phase_completion_bonus;
+    if (app.xp?.saga_completion_bonus)  SAGA_COMPLETION_BONUS  = app.xp.saga_completion_bonus;
+    if (app.xp?.achievement_bonus)      ACHIEVEMENT_BONUS      = app.xp.achievement_bonus;
+    if (app.phase_bonuses)              PHASE_BONUSES          = app.phase_bonuses;
+    if (app.saga_bonuses)               SAGA_BONUSES           = app.saga_bonuses;
+
+    // Hydrate RANKS from app.json
+    RANKS = app.ranks.map(r => ({ name: r.name, min: r.min_xp, level: r.level }));
+
+    // Hydrate ACHIEVEMENTS from app.json (build live req functions from declarative config)
+    ACHIEVEMENTS = app.achievements.map(a => ({
+      id:       a.id,
+      icon:     `<i class="${a.icon_fa}"></i>`,
+      name:     a.name,
+      desc:     a.desc,
+      bonus_xp: a.bonus_xp || 0,
+      req:      buildAchievementReq(a.req),
+    }));
+
+    // Build achievement bonus lookup: id -> bonus_xp
+    ACHIEVEMENT_BONUS_MAP = Object.fromEntries(
+      app.achievements.filter(a => a.bonus_xp).map(a => [a.id, a.bonus_xp])
+    );
+
+    // Hydrate phase & type maps
+    PHASE_COLORS = app.phase_colors || {};
+    TYPE_COLORS  = Object.fromEntries(Object.entries(app.type_ui).map(([k,v]) => [k, v.css_class]));
+    TYPE_LABELS  = Object.fromEntries(Object.entries(app.type_ui).map(([k,v]) => [k, v.label]));
+
+    // Hydrate avatars
+    AVATARS     = app.avatars || [];
+    AVATAR_BASE = app.avatar_base_path || '/assets/app/avatars/';
+
   } catch (e) {
     console.error('Failed to load data files:', e);
     // Fallback: graceful empty state
-    MCU_DATA   = { entries: [], release_order: [], chronological_order: [], about: { phases: [] } };
-    STARS_DATA = { stars: [] };
+    MCU_DATA     = { entries: [], release_order: [], chronological_order: [], about: { phases: [] } };
+    STARS_DATA   = { stars: [] };
+    RANKS        = [{ name: 'Civilian', min: 0, level: 1 }];
+    ACHIEVEMENTS = [];
+    PHASE_COLORS = {};
+    TYPE_COLORS  = {};
+    TYPE_LABELS  = {};
   }
 }
 
 // ─── View Mode (Shared URL) ────────────────────────────
 function checkViewMode() {
   const params = new URLSearchParams(window.location.search);
-  const shareData = params.get(VIEW_PARAM);
+  const shareData  = params.get(VIEW_PARAM);
+  const importData = params.get(IMPORT_PARAM);
+
+  if (importData) {
+    try {
+      const decoded = JSON.parse(atob(importData));
+      // Schedule the import panel to open after render
+      window._pendingImport = decoded;
+    } catch(e) {
+      // invalid import link, ignore
+    }
+    return;
+  }
+
   if (!shareData) return;
 
   try {
@@ -132,14 +297,17 @@ function loadUserState() {
     if (raw) {
       USER_STATE = JSON.parse(raw);
     } else {
-      USER_STATE = { name: '', watched: [], wishlist: [] };
+      USER_STATE = { name: '', watched: [], wishlist: [], avatar: null, bonus_xp: 0, earned_bonuses: [] };
     }
   } catch(e) {
-    USER_STATE = { name: '', watched: [], wishlist: [] };
+    USER_STATE = { name: '', watched: [], wishlist: [], bonus_xp: 0, earned_bonuses: [] };
   }
-  // Ensure arrays exist
-  if (!Array.isArray(USER_STATE.watched))  USER_STATE.watched  = [];
-  if (!Array.isArray(USER_STATE.wishlist)) USER_STATE.wishlist = [];
+  // Ensure fields exist (backwards-compat with old saved states)
+  if (!Array.isArray(USER_STATE.watched))       USER_STATE.watched       = [];
+  if (!Array.isArray(USER_STATE.wishlist))      USER_STATE.wishlist      = [];
+  if (!Array.isArray(USER_STATE.earned_bonuses)) USER_STATE.earned_bonuses = [];
+  if (!USER_STATE.avatar)                       USER_STATE.avatar        = null;
+  if (typeof USER_STATE.bonus_xp !== 'number')  USER_STATE.bonus_xp      = 0;
 }
 
 function saveUserState() {
@@ -157,12 +325,78 @@ function toggleWatched(id, evt) {
   if (i === -1) {
     USER_STATE.watched.push(id);
     showToast('<i class="fa-solid fa-check"></i> Marked as watched', 'green');
+    // Award bonus XP for milestones triggered by this watch
+    setTimeout(() => checkAndAwardBonuses(id), 400);
   } else {
     USER_STATE.watched.splice(i, 1);
     showToast('Removed from watched', 'red');
   }
   saveUserState();
   updateAllUI();
+}
+
+// ─── BONUS XP ENGINE ──────────────────────────────────
+function awardBonusXP(bonusKey, amount, label, icon) {
+  if (USER_STATE.earned_bonuses.includes(bonusKey)) return; // already earned
+  USER_STATE.earned_bonuses.push(bonusKey);
+  USER_STATE.bonus_xp = (USER_STATE.bonus_xp || 0) + amount;
+  saveUserState();
+  // Staggered toast so it appears after the "marked as watched" toast
+  setTimeout(() => {
+    showToast(
+      `<i class="${icon}"></i> <strong>+${amount} XP</strong> — ${label}`,
+      'gold'
+    );
+  }, 800);
+  // Re-render XP bar with new total
+  setTimeout(() => renderXPBar(), 900);
+}
+
+function checkAndAwardBonuses(watchedId) {
+  const entry     = getEntry(watchedId);
+  if (!entry) return;
+  const phaseId   = entry.phase;
+  const phaseData = MCU_DATA.about?.phases?.find(p => p.id === phaseId);
+  const saga      = MCU_DATA.about?.sagas?.find(s => s.phases.includes(phaseData?.number));
+
+  // ── Achievement bonuses ──────────────────────────────
+  for (const a of ACHIEVEMENTS) {
+    if (!a.bonus_xp) continue;
+    const bonusKey = `achievement:${a.id}`;
+    if (!USER_STATE.earned_bonuses.includes(bonusKey) && a.req(USER_STATE)) {
+      awardBonusXP(bonusKey, a.bonus_xp, a.name, a.icon.match(/class="([^"]+)"/)?.[1] || 'fa-solid fa-trophy');
+    }
+  }
+
+  // ── Phase completion bonus ───────────────────────────
+  if (phaseId && phaseData) {
+    const bonusKey  = `phase:${phaseId}`;
+    const phaseBonus = PHASE_BONUSES[phaseId] ?? PHASE_COMPLETION_BONUS;
+    if (!USER_STATE.earned_bonuses.includes(bonusKey) && phaseComplete(USER_STATE, phaseId)) {
+      awardBonusXP(
+        bonusKey,
+        phaseBonus,
+        `${phaseData.name} Complete!`,
+        'fa-solid fa-layer-group'
+      );
+    }
+  }
+
+  // ── Saga completion bonus ────────────────────────────
+  if (saga) {
+    const bonusKey  = `saga:${saga.id}`;
+    const sagaBonus = SAGA_BONUSES[saga.id] ?? SAGA_COMPLETION_BONUS;
+    const sagaPhaseIds = saga.phases.map(num => `phase_${num}`);
+    const sagaDone = sagaPhaseIds.every(pid => phaseComplete(USER_STATE, pid));
+    if (!USER_STATE.earned_bonuses.includes(bonusKey) && sagaDone) {
+      awardBonusXP(
+        bonusKey,
+        sagaBonus,
+        `${saga.name} Complete!`,
+        'fa-solid fa-infinity'
+      );
+    }
+  }
 }
 
 function toggleWishlist(id, evt) {
@@ -409,7 +643,7 @@ function updateJourneyTab() {
 }
 
 function calcXP() {
-  return USER_STATE.watched.length * 10;
+  return (USER_STATE.watched.length * XP_PER_WATCHED) + (USER_STATE.bonus_xp || 0);
 }
 
 function getRank(xp) {
@@ -452,9 +686,9 @@ function renderAchievements() {
     const unlocked = a.req(USER_STATE);
     return `<div class="achievement-card ${unlocked?'unlocked':'locked'}">
       <div class="achievement-icon">${a.icon}</div>
-
       <div class="achievement-name">${a.name}</div>
       <div class="achievement-desc">${a.desc}</div>
+      ${a.bonus_xp ? `<div class="achievement-xp-badge ${unlocked?'earned':''}">+${a.bonus_xp} XP</div>` : ''}
       ${unlocked ? '<div class="achievement-check"><i class="fa-solid fa-check"></i></div>' : ''}
     </div>`;
   }).join('');
@@ -481,6 +715,7 @@ function renderJourneyStats() {
     ['stat-num', movies,   'Movies'],
     ['stat-num', series,   'Series'],
     ['stat-num', xp,       'Total XP'],
+    ['stat-num', USER_STATE.bonus_xp || 0, 'Bonus XP'],
     ['stat-num', USER_STATE.wishlist.length, 'Wishlisted'],
     ['stat-num', hrs > 0 ? `${hrs}h` : '0h', 'Time Watched'],
     ['stat-num', ACHIEVEMENTS.filter(a => a.req(USER_STATE)).length, 'Achievements'],
@@ -570,6 +805,8 @@ function renderStarsTab() {
   const container = document.getElementById('stars-grid');
   if (!container) return;
   container.innerHTML = STARS_DATA.stars.map(s => buildStarCard(s)).join('');
+  const countEl = document.getElementById('stars-tab-count');
+  if (countEl) countEl.textContent = `${STARS_DATA.stars.length} cast & crew of the Marvel universe`;
 }
 
 function buildStarCard(s) {
@@ -605,6 +842,7 @@ function initSearch() {
   input.addEventListener('input', () => {
     clearTimeout(searchTimeout);
     const q = input.value.trim();
+    syncSearchToUrl(q);
     if (q.length < 2) { drop.classList.add('hidden'); return; }
     searchTimeout = setTimeout(() => renderSearchResults(q), 200);
   });
@@ -668,6 +906,24 @@ function renderSearchResults(q) {
 
 // ─── DETAIL PANEL ─────────────────────────────────────
 function openDetail(id) {
+  _buildDetailContent(id);
+  pushModalState('title', id);
+  const hasBack = _modalStack.length > 1;
+  document.getElementById('detail-back-btn')?.classList.toggle('hidden', !hasBack);
+  // Close star panel if open
+  document.getElementById('star-panel')?.classList.add('hidden');
+  openPanel('detail-panel');
+}
+
+function openDetailSilent(id) {
+  _buildDetailContent(id);
+  _modalStack.push({ type: 'title', id });
+  const hasBack = _modalStack.length > 1;
+  document.getElementById('detail-back-btn')?.classList.toggle('hidden', !hasBack);
+  openPanel('detail-panel');
+}
+
+function _buildDetailContent(id) {
   const e = getEntry(id);
   if (!e) return;
 
@@ -692,7 +948,7 @@ function openDetail(id) {
     const img  = star ? star.image : '';
     const name = star ? star.name : (c.actor || 'Unknown');
     const char = c.character || '';
-    return `<div class="cast-item" onclick="${star ? `openStarDetail('${star.id}')` : ''}">
+    return `<div class="cast-item" onclick="${star ? `openStarDetail('${star.id}')` : ''}${star ? '' : ''}">
       <img class="cast-img" src="${img}" alt="${escapeHtml(name)}" loading="lazy" onerror="this.src=''">
       <div class="cast-name">${escapeHtml(name)}</div>
       <div class="cast-char">${escapeHtml(char)}</div>
@@ -765,15 +1021,30 @@ function openDetail(id) {
         <div class="detail-section-title">Links</div>
         <div class="detail-links-row">${extLinks}</div>
       </div>` : ''}
+      ${e.genres?.length ? `<div>
+        <div class="detail-section-title"><i class="fa-solid fa-tags" style="color:var(--text3);margin-right:6px"></i>Genres</div>
+        <div class="detail-genres-row">${e.genres.map(g => `<span class="detail-genre-tag">${escapeHtml(g)}</span>`).join('')}</div>
+      </div>` : ''}
+      ${e.writer ? `<div>
+        <div class="detail-section-title"><i class="fa-solid fa-pen-nib" style="color:var(--text3);margin-right:6px"></i>Writer${e.writer.includes(',') ? 's' : ''}</div>
+        <p style="font-size:13px;color:var(--text2)">${escapeHtml(e.writer)}</p>
+      </div>` : ''}
+      ${e.box_office?.worldwide_gross_usd ? `<div>
+        <div class="detail-section-title"><i class="fa-solid fa-sack-dollar" style="color:var(--text3);margin-right:6px"></i>Box Office</div>
+        <div class="detail-boxoffice-row">
+          ${e.box_office.budget_usd ? `<div class="detail-bo-item"><span class="detail-bo-label"><i class="fa-solid fa-coins"></i> Budget</span><span class="detail-bo-val">$${(e.box_office.budget_usd/1e6).toFixed(0)}M</span></div>` : ''}
+          <div class="detail-bo-item"><span class="detail-bo-label"><i class="fa-solid fa-globe"></i> Worldwide</span><span class="detail-bo-val txt-gold">$${(e.box_office.worldwide_gross_usd/1e6).toFixed(0)}M</span></div>
+          ${e.box_office.budget_usd ? `<div class="detail-bo-item"><span class="detail-bo-label"><i class="fa-solid fa-arrow-trend-up"></i> ROI</span><span class="detail-bo-val" style="color:var(--green)">${((e.box_office.worldwide_gross_usd/e.box_office.budget_usd)*100).toFixed(0)}%</span></div>` : ''}
+        </div>
+      </div>` : ''}
       ${e.in_universe_year ? `<div>
-        <div class="detail-section-title">In-Universe Year</div>
+        <div class="detail-section-title"><i class="fa-solid fa-hourglass" style="color:var(--text3);margin-right:6px"></i>In-Universe Year</div>
         <p style="font-size:14px;color:var(--text2)">${escapeHtml(e.in_universe_year)}</p>
       </div>` : ''}
       ${e.post_credit_scenes > 0 ? `<div style="font-size:13px;color:var(--text3)"><i class="fa-solid fa-film txt-gold"></i> ${e.post_credit_scenes} post-credit scene${e.post_credit_scenes>1?'s':''}</div>` : ''}
     </div>`;
 
   document.getElementById('detail-content').innerHTML = content;
-  openPanel('detail-panel');
 }
 
 function updateDetailWatchBtn(id) {
@@ -794,6 +1065,23 @@ function updateDetailWishBtn(id) {
 
 // ─── STAR DETAIL PANEL ────────────────────────────────
 function openStarDetail(starId) {
+  _buildStarContent(starId);
+  pushModalState('star', starId);
+  const hasBack = _modalStack.length > 1;
+  document.getElementById('star-back-btn')?.classList.toggle('hidden', !hasBack);
+  document.getElementById('detail-panel')?.classList.add('hidden');
+  openPanel('star-panel');
+}
+
+function openStarDetailSilent(starId) {
+  _buildStarContent(starId);
+  _modalStack.push({ type: 'star', id: starId });
+  const hasBack = _modalStack.length > 1;
+  document.getElementById('star-back-btn')?.classList.toggle('hidden', !hasBack);
+  openPanel('star-panel');
+}
+
+function _buildStarContent(starId) {
   const s = STARS_DATA.stars.find(x => x.id === starId);
   if (!s) return;
 
@@ -814,7 +1102,7 @@ function openStarDetail(starId) {
     .filter(Boolean);
 
   const appsHtml = appearances.map(e =>
-    `<div class="star-app-card" onclick="closePanel('star-panel');setTimeout(()=>openDetail('${e.id}'),200)">
+    `<div class="star-app-card" onclick="openDetail('${e.id}')">
       <img class="star-app-poster" src="${e.image}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.src=''">
       <div class="star-app-title">${escapeHtml(e.title)}</div>
     </div>`
@@ -826,7 +1114,11 @@ function openStarDetail(starId) {
       <div class="star-detail-info">
         <div class="star-detail-name">${escapeHtml(s.name)}</div>
         <div class="star-detail-char">${escapeHtml(s.character||'')}</div>
-        <div class="star-detail-meta">${s.nationality||''} ${s.age ? `· Age ${s.age}` : ''}</div>
+        <div class="star-detail-meta">
+          ${s.nationality ? `<span><i class="fa-solid fa-earth-americas" style="opacity:.5;margin-right:4px"></i>${escapeHtml(s.nationality)}</span>` : ''}
+          ${s.born?.date ? `<span><i class="fa-regular fa-calendar" style="opacity:.5;margin-right:4px"></i>Age ${new Date().getFullYear() - new Date(s.born.date).getFullYear()}</span>` : ''}
+          ${s.born?.place ? `<span><i class="fa-solid fa-location-dot" style="opacity:.5;margin-right:4px"></i>${escapeHtml(s.born.place)}</span>` : ''}
+        </div>
       </div>
     </div>
     <div class="star-detail-body">
@@ -845,12 +1137,91 @@ function openStarDetail(starId) {
     </div>`;
 
   document.getElementById('star-content').innerHTML = content;
-  openPanel('star-panel');
+}
+
+// Back button: navigate back in modal stack
+function modalGoBack() {
+  if (_modalStack.length < 2) return;
+  _suppressPopState = true;
+  const current = _modalStack.pop();
+  const prev    = _modalStack[_modalStack.length - 1];
+
+  // Close current panel
+  if (current.type === 'title') {
+    document.getElementById('detail-panel')?.classList.add('hidden');
+  } else if (current.type === 'star') {
+    document.getElementById('star-panel')?.classList.add('hidden');
+  }
+
+  // Reopen previous
+  if (prev.type === 'title') {
+    _buildDetailContent(prev.id);
+    document.getElementById('detail-panel')?.classList.remove('hidden');
+  } else if (prev.type === 'star') {
+    _buildStarContent(prev.id);
+    document.getElementById('star-panel')?.classList.remove('hidden');
+  }
+
+  // Update URL
+  const params = new URLSearchParams(window.location.search);
+  params.set('id', prev.id || prev.type);
+  params.delete('dl');
+  history.replaceState({ modal: prev.type, id: prev.id, stack: [..._modalStack] }, '', '?' + params.toString());
+
+  // Update back button visibility
+  const stillHasBack = _modalStack.length > 1;
+  document.getElementById('detail-back-btn')?.classList.toggle('hidden', !stillHasBack);
+  document.getElementById('star-back-btn')?.classList.toggle('hidden', !stillHasBack);
+  _suppressPopState = false;
+}
+
+
+function buildAvatarImgHtml(avatarId, size, fallbackName) {
+  if (avatarId) {
+    const av = AVATARS.find(a => a.id === avatarId);
+    if (av) {
+      return `<img src="${AVATAR_BASE}${av.file}" alt="${escapeHtml(av.name)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block;" onerror="this.style.display='none'">`;
+    }
+  }
+  return fallbackName ? fallbackName[0].toUpperCase() : '?';
+}
+
+function buildAvatarPicker() {
+  const current = USER_STATE.avatar;
+  const items = AVATARS.map(av => {
+    const selected = av.id === current ? 'av-item--selected' : '';
+    return `<button class="av-item ${selected}" onclick="selectAvatar('${av.id}')" title="${escapeHtml(av.name)}">
+      <img src="${AVATAR_BASE}${av.file}" alt="${escapeHtml(av.name)}" loading="lazy" onerror="this.style.opacity='0.3'">
+    </button>`;
+  }).join('');
+  return `<div class="av-picker-wrap">
+    <div class="acct-label" style="margin-bottom:8px"><i class="fa-solid fa-id-card"></i> Choose Avatar</div>
+    <div class="av-picker-grid">${items}</div>
+  </div>`;
+}
+
+function selectAvatar(id) {
+  USER_STATE.avatar = (USER_STATE.avatar === id) ? null : id;
+  saveUserState();
+  updateHeaderAvatar();
+  // Refresh the avatar display and picker in place without full re-render
+  const wrap = document.getElementById('profile-avatar-lg-wrap');
+  if (wrap) wrap.innerHTML = buildAvatarImgHtml(USER_STATE.avatar, 64, USER_STATE.name);
+  document.querySelectorAll('.av-item').forEach(el => {
+    el.classList.toggle('av-item--selected', el.getAttribute('onclick').includes(`'${id}'`) && USER_STATE.avatar === id);
+  });
 }
 
 // ─── ACCOUNT PANEL ────────────────────────────────────
 function openAccountPanel() {
   renderAccountContent();
+  pushModalState('profile', null);
+  openPanel('account-panel');
+}
+
+function openAccountPanelSilent() {
+  renderAccountContent();
+  _modalStack.push({ type: 'profile', id: null });
   openPanel('account-panel');
 }
 
@@ -877,10 +1248,12 @@ function renderAccountContent() {
     const watched  = USER_STATE.watched.length;
     const wishlist = USER_STATE.wishlist.length;
     const achievements = ACHIEVEMENTS.filter(a => a.req(USER_STATE)).length;
+    const avatarHtml = buildAvatarImgHtml(USER_STATE.avatar, 64, name);
+    const avatarPickerHtml = IS_VIEW_MODE ? '' : buildAvatarPicker();
 
     container.innerHTML = `<div class="profile-display">
       <div class="profile-header">
-        <div class="profile-avatar-lg">${name[0].toUpperCase()}</div>
+        <div class="profile-avatar-lg" id="profile-avatar-lg-wrap">${avatarHtml}</div>
         <div>
           <div class="profile-name">${escapeHtml(name)}</div>
           <div class="profile-sub">${rank.name} · Level ${rank.level} · ${xp} XP</div>
@@ -891,6 +1264,7 @@ function renderAccountContent() {
         <div class="ps-card"><span class="ps-num">${wishlist}</span><span class="ps-label">Wishlist</span></div>
         <div class="ps-card"><span class="ps-num">${achievements}</span><span class="ps-label">Achievements</span></div>
       </div>
+      ${avatarPickerHtml}
       ${!IS_VIEW_MODE ? `<button class="acct-btn-danger" onclick="resetAccount()">
         <i class="fa-solid fa-trash"></i> Reset All Data
       </button>` : ''}
@@ -911,7 +1285,7 @@ function saveAccountName() {
 
 function resetAccount() {
   if (!confirm('This will delete ALL your watch history and wishlist. Are you sure?')) return;
-  USER_STATE = { name: '', watched: [], wishlist: [] };
+  USER_STATE = { name: '', watched: [], wishlist: [], avatar: null, bonus_xp: 0, earned_bonuses: [] };
   saveUserState();
   updateAllUI();
   renderAccountContent();
@@ -922,7 +1296,16 @@ function resetAccount() {
 function updateHeaderAvatar() {
   const el = document.getElementById('hdr-avatar');
   if (!el) return;
-  const name = USER_STATE.name;
+  const name   = USER_STATE.name;
+  const avatar = USER_STATE.avatar;
+  if (avatar) {
+    const av = AVATARS.find(a => a.id === avatar);
+    if (av) {
+      el.innerHTML = `<img src="${AVATAR_BASE}${av.file}" alt="${escapeHtml(av.name)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">`;
+      return;
+    }
+  }
+  el.innerHTML = '';
   el.textContent = name ? name[0].toUpperCase() : '?';
 }
 
@@ -934,6 +1317,13 @@ function openSharePanel() {
     return;
   }
   renderShareContent();
+  pushModalState('share', null);
+  openPanel('share-panel');
+}
+
+function openSharePanelSilent() {
+  renderShareContent();
+  _modalStack.push({ type: 'share', id: null });
   openPanel('share-panel');
 }
 
@@ -945,27 +1335,38 @@ function renderShareContent() {
     name:     USER_STATE.name,
     watched:  USER_STATE.watched,
     wishlist: USER_STATE.wishlist,
+    avatar:   USER_STATE.avatar || null,
   };
-  const encoded = btoa(JSON.stringify(shareObj));
-  const url     = `${BASE_URL}?${VIEW_PARAM}=${encoded}`;
+  const encoded     = btoa(JSON.stringify(shareObj));
+  const shareUrl    = `${BASE_URL}?${VIEW_PARAM}=${encoded}`;
+  const importUrl   = `${BASE_URL}?${IMPORT_PARAM}=${encoded}`;
 
   container.innerHTML = `
     ${IS_VIEW_MODE ? `<div class="view-mode-banner"><i class="fa-solid fa-eye"></i> You're viewing someone else's journey</div>` : ''}
-    <div class="detail-section-title">Your Share Link</div>
+
+    <span class="share-section-title"><i class="fa-solid fa-eye"></i> &nbsp;View-Only Link</span>
     <div class="share-url-box">
-      <span class="share-url-text" id="share-url-text">${url}</span>
-      <button class="share-copy-btn" onclick="copyShareUrl('${escapeHtml(url)}')">Copy</button>
+      <span class="share-url-text" id="share-url-text">${shareUrl}</span>
+      <button class="share-copy-btn" onclick="copyToClipboard('${escapeHtml(shareUrl)}', 'share-url-text')">Copy</button>
     </div>
-    <p class="share-note">Anyone with this link can view your MCU journey — they can't edit it. The link is generated from your current progress and updates each time you open this panel.</p>
+    <p class="share-note" style="margin-bottom:20px">Anyone with this link can view your MCU journey — read only, no changes.</p>
+
+    <div class="share-section-divider">or</div>
+
+    <span class="share-section-title"><i class="fa-solid fa-cloud-arrow-down"></i> &nbsp;Copy Profile Link</span>
+    <div class="share-url-box">
+      <span class="share-url-text" id="import-url-text">${importUrl}</span>
+      <button class="share-copy-btn share-copy-btn--green" onclick="copyToClipboard('${escapeHtml(importUrl)}', 'import-url-text')">Copy</button>
+    </div>
+    <p class="share-note">Anyone who opens this link will be prompted to <strong style="color:var(--text)">load your profile as their own</strong> — perfect for syncing between devices.</p>
   `;
 }
 
-function copyShareUrl(url) {
+function copyToClipboard(url, fallbackElId) {
   navigator.clipboard.writeText(url).then(() => {
     showToast('<i class="fa-solid fa-copy"></i> Link copied!', 'blue');
   }).catch(() => {
-    // Fallback
-    const el = document.getElementById('share-url-text');
+    const el = document.getElementById(fallbackElId);
     if (el) {
       const range = document.createRange();
       range.selectNode(el);
@@ -973,6 +1374,70 @@ function copyShareUrl(url) {
     }
     showToast('Select and copy the link', 'gold');
   });
+}
+
+// Keep old name for any external callers
+function copyShareUrl(url) { copyToClipboard(url, 'share-url-text'); }
+
+// ─── IMPORT PANEL ─────────────────────────────────────
+function openImportPanel(profileData) {
+  const container = document.getElementById('import-content');
+  if (!container) return;
+
+  const name     = profileData.name || 'Unknown';
+  const watched  = (profileData.watched  || []).length;
+  const wishlist = (profileData.wishlist || []).length;
+  const hasExisting = USER_STATE.watched.length > 0 || USER_STATE.wishlist.length > 0 || USER_STATE.name;
+  const avatarHtml  = buildAvatarImgHtml(profileData.avatar || null, 52, name);
+  const avatarBg    = profileData.avatar ? 'transparent' : '';
+
+  container.innerHTML = `
+    <div class="import-profile-card">
+      <div class="import-profile-avatar" style="background:${avatarBg || 'var(--green)'}">${avatarHtml}</div>
+      <div class="import-profile-info">
+        <div class="import-profile-name">${escapeHtml(name)}</div>
+        <div class="import-profile-sub">${watched} watched &nbsp;·&nbsp; ${wishlist} wishlisted</div>
+      </div>
+    </div>
+    ${hasExisting ? `<div class="import-warning">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span>You already have a profile on this device. Importing will <strong>replace</strong> your current watch history and wishlist.</span>
+    </div>` : ''}
+    <div class="import-btn-row">
+      <button class="acct-btn-green" onclick="confirmImport(${escapeHtml(JSON.stringify(profileData))})">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Import Profile
+      </button>
+      <button class="acct-btn-ghost" onclick="dismissImport()">
+        <i class="fa-solid fa-xmark"></i> Dismiss
+      </button>
+    </div>
+  `;
+
+  openPanel('import-panel');
+}
+
+function confirmImport(profileData) {
+  USER_STATE = {
+    name:          profileData.name          || '',
+    watched:       Array.isArray(profileData.watched)       ? profileData.watched       : [],
+    wishlist:      Array.isArray(profileData.wishlist)      ? profileData.wishlist      : [],
+    avatar:        profileData.avatar        || null,
+    bonus_xp:      typeof profileData.bonus_xp === 'number' ? profileData.bonus_xp     : 0,
+    earned_bonuses: Array.isArray(profileData.earned_bonuses) ? profileData.earned_bonuses : [],
+  };
+  saveUserState();
+  updateAllUI();
+  closePanel('import-panel');
+  // Clean the URL so refreshing doesn't re-trigger the import
+  window.history.replaceState({}, '', window.location.pathname);
+  window._pendingImport = null;
+  showToast(`<i class="fa-solid fa-check"></i> Profile imported — welcome, ${escapeHtml(USER_STATE.name || 'back')}!`, 'green');
+}
+
+function dismissImport() {
+  closePanel('import-panel');
+  window.history.replaceState({}, '', window.location.pathname);
+  window._pendingImport = null;
 }
 
 // ─── PANELS ───────────────────────────────────────────
@@ -983,11 +1448,20 @@ function openPanel(id) {
 
 function closePanel(id) {
   document.getElementById(id)?.classList.add('hidden');
-  document.body.style.overflow = '';
+  // Only clear overflow if all panels closed
+  const panels = ['detail-panel','star-panel','account-panel','share-panel','import-panel'];
+  const anyOpen = panels.some(p => !document.getElementById(p)?.classList.contains('hidden'));
+  if (!anyOpen) document.body.style.overflow = '';
+  if (!_suppressPopState) clearModalFromUrl();
 }
 
 // ─── TABS ─────────────────────────────────────────────
 function switchTab(tab) {
+  switchTabSilent(tab);
+  syncTabToUrl(tab);
+}
+
+function switchTabSilent(tab) {
   activeTab = tab;
   document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
   document.querySelector(`#tab-${tab}`)?.classList.add('active');
@@ -1009,11 +1483,39 @@ function setupEventListeners() {
   // Close panels on Escape
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      ['detail-panel','star-panel','account-panel','share-panel'].forEach(id => {
+      ['detail-panel','star-panel','account-panel','share-panel','import-panel'].forEach(id => {
         const el = document.getElementById(id);
         if (el && !el.classList.contains('hidden')) closePanel(id);
       });
     }
+  });
+
+  // Browser back/forward
+  window.addEventListener('popstate', e => {
+    if (_suppressPopState) return;
+    // Close all panels
+    _suppressPopState = true;
+    ['detail-panel','star-panel','account-panel','share-panel','import-panel'].forEach(id => {
+      document.getElementById(id)?.classList.add('hidden');
+    });
+    document.body.style.overflow = '';
+    _modalStack = [];
+
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('t');
+    const id  = params.get('id');
+    if (tab && ['home','timeline','journey','watchlist','stars'].includes(tab)) switchTabSilent(tab);
+    if (id) {
+      if (id === 'profile') openAccountPanelSilent();
+      else if (id === 'share') openSharePanelSilent();
+      else {
+        const entry = getEntry(id);
+        const star  = STARS_DATA?.stars.find(s => s.id === id);
+        if (entry) openDetailSilent(id);
+        else if (star) openStarDetailSilent(id);
+      }
+    }
+    _suppressPopState = false;
   });
 }
 

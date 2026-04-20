@@ -1,0 +1,593 @@
+{
+  "_comment": "app.json \u2014 MCU Universe App Configuration. All IDs reference mcu.json / stars.json / data.json. No hardcoded names or titles here.",
+  "meta": {
+    "app_name": "MCU Universe",
+    "tagline": "The Ultimate Marvel Tracker",
+    "version": "1.0.0",
+    "storage_key": "mcu_universe_v1",
+    "base_url": "https://mcu.mahdiyasser.site/app/",
+    "share_param": "share"
+  },
+  "xp": {
+    "xp_per_watched": 30,
+    "phase_completion_bonus": 200,
+    "saga_completion_bonus": 500,
+    "achievement_bonus": 0
+  },
+  "phase_bonuses": {
+    "phase_1": 0,
+    "phase_2": 0,
+    "phase_3": 0,
+    "phase_4": 0,
+    "phase_5": 0,
+    "phase_6": 0
+  },
+  "saga_bonuses": {
+    "saga_001": 500,
+    "saga_002": 500
+  },
+  "ranks": [
+    {
+      "id": "rank_civilian",
+      "name": "Civilian",
+      "min_xp": 0,
+      "level": 1
+    },
+    {
+      "id": "rank_recruit",
+      "name": "Recruit",
+      "min_xp": 200,
+      "level": 2
+    },
+    {
+      "id": "rank_shield_agent",
+      "name": "S.H.I.E.L.D. Agent",
+      "min_xp": 350,
+      "level": 3
+    },
+    {
+      "id": "rank_avenger",
+      "name": "Avenger",
+      "min_xp": 600,
+      "level": 4
+    },
+    {
+      "id": "rank_hero",
+      "name": "Hero",
+      "min_xp": 1000,
+      "level": 5
+    },
+    {
+      "id": "rank_superhero",
+      "name": "Superhero",
+      "min_xp": 1500,
+      "level": 6
+    },
+    {
+      "id": "rank_guardian",
+      "name": "Guardian",
+      "min_xp": 2000,
+      "level": 7
+    },
+    {
+      "id": "rank_champion",
+      "name": "Champion",
+      "min_xp": 2250,
+      "level": 8
+    },
+    {
+      "id": "rank_infinity_holder",
+      "name": "Infinity Stone Holder",
+      "min_xp": 2500,
+      "level": 9
+    },
+    {
+      "id": "rank_sorcerer_supreme",
+      "name": "Sorcerer Supreme",
+      "min_xp": 3000,
+      "level": 10
+    },
+    {
+      "id": "rank_multiversal_legend",
+      "name": "Multiversal Legend",
+      "min_xp": 4000,
+      "level": 11
+    }
+  ],
+  "achievements": [
+    {
+      "id": "first_watch",
+      "name": "First Watch",
+      "desc": "Watch your first MCU title",
+      "icon_fa": "fa-solid fa-clapperboard",
+      "req": {
+        "type": "watched_min",
+        "count": 1
+      },
+      "bonus_xp": 50
+    },
+    {
+      "id": "phase1_complete",
+      "name": "Phase One Complete",
+      "desc": "Watch all Phase 1 titles",
+      "icon_fa": "fa-solid fa-1",
+      "req": {
+        "type": "phase_complete",
+        "phase_id": "phase_1"
+      },
+      "bonus_xp": 200
+    },
+    {
+      "id": "phase2_complete",
+      "name": "Phase Two Complete",
+      "desc": "Watch all Phase 2 titles",
+      "icon_fa": "fa-solid fa-2",
+      "req": {
+        "type": "phase_complete",
+        "phase_id": "phase_2"
+      },
+      "bonus_xp": 200
+    },
+    {
+      "id": "phase3_complete",
+      "name": "Phase Three Complete",
+      "desc": "Watch all Phase 3 titles",
+      "icon_fa": "fa-solid fa-3",
+      "req": {
+        "type": "phase_complete",
+        "phase_id": "phase_3"
+      },
+      "bonus_xp": 300
+    },
+    {
+      "id": "phase4_complete",
+      "name": "Phase Four Complete",
+      "desc": "Watch all Phase 4 titles",
+      "icon_fa": "fa-solid fa-4",
+      "req": {
+        "type": "phase_complete",
+        "phase_id": "phase_4"
+      },
+      "bonus_xp": 200
+    },
+    {
+      "id": "phase5_complete",
+      "name": "Phase Five Complete",
+      "desc": "Watch all Phase 5 titles",
+      "icon_fa": "fa-solid fa-5",
+      "req": {
+        "type": "phase_complete",
+        "phase_id": "phase_5"
+      },
+      "bonus_xp": 200
+    },
+    {
+      "id": "phase6_complete",
+      "name": "Phase Six Complete",
+      "desc": "Watch all Phase 6 titles",
+      "icon_fa": "fa-solid fa-6",
+      "req": {
+        "type": "phase_complete",
+        "phase_id": "phase_6"
+      },
+      "bonus_xp": 300
+    },
+    {
+      "id": "infinity_saga",
+      "name": "Infinity Saga",
+      "desc": "Complete The Infinity Saga (Phases 1\u20133)",
+      "icon_fa": "fa-solid fa-infinity",
+      "req": {
+        "type": "phases_all_complete",
+        "phase_ids": [
+          "phase_1",
+          "phase_2",
+          "phase_3"
+        ]
+      },
+      "bonus_xp": 500
+    },
+    {
+      "id": "multiverse_saga",
+      "name": "Multiverse Saga",
+      "desc": "Complete The Multiverse Saga (Phases 4\u20136)",
+      "icon_fa": "fa-solid fa-globe",
+      "req": {
+        "type": "phases_all_complete",
+        "phase_ids": [
+          "phase_4",
+          "phase_5",
+          "phase_6"
+        ]
+      },
+      "bonus_xp": 500
+    },
+    {
+      "id": "avengers_assemble",
+      "name": "Avengers Assemble",
+      "desc": "Watch all 4 Avengers films",
+      "icon_fa": "fa-solid fa-shield-halved",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_006",
+          "mcu_011",
+          "mcu_019",
+          "mcu_022"
+        ]
+      },
+      "bonus_xp": 150
+    },
+    {
+      "id": "iron_man_trilogy",
+      "name": "Iron Man Trilogy",
+      "desc": "Watch all Iron Man films",
+      "icon_fa": "fa-solid fa-robot",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_001",
+          "mcu_003",
+          "mcu_007"
+        ]
+      },
+      "bonus_xp": 100
+    },
+    {
+      "id": "god_of_thunder",
+      "name": "God of Thunder",
+      "desc": "Watch all Thor films",
+      "icon_fa": "fa-solid fa-bolt",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_004",
+          "mcu_008",
+          "mcu_017",
+          "mcu_036"
+        ]
+      },
+      "bonus_xp": 100
+    },
+    {
+      "id": "first_avenger",
+      "name": "First Avenger",
+      "desc": "Watch all Captain America films",
+      "icon_fa": "fa-solid fa-shield",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_005",
+          "mcu_009",
+          "mcu_013",
+          "mcu_053"
+        ]
+      },
+      "bonus_xp": 100
+    },
+    {
+      "id": "guardians",
+      "name": "Guardians",
+      "desc": "Watch all Guardians of the Galaxy films",
+      "icon_fa": "fa-solid fa-rocket",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_010",
+          "mcu_015",
+          "mcu_043"
+        ]
+      },
+      "bonus_xp": 100
+    },
+    {
+      "id": "spider_verse",
+      "name": "Friendly Neighborhood",
+      "desc": "Watch all Spider-Man MCU films",
+      "icon_fa": "fa-solid fa-spider",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_016",
+          "mcu_023",
+          "mcu_032",
+          "mcu_060"
+        ]
+      },
+      "bonus_xp": 100
+    },
+    {
+      "id": "doctor_strange_saga",
+      "name": "Master of the Mystic Arts",
+      "desc": "Watch all Doctor Strange films",
+      "icon_fa": "fa-solid fa-hat-wizard",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_014",
+          "mcu_034"
+        ]
+      },
+      "bonus_xp": 75
+    },
+    {
+      "id": "ant_man_trilogy",
+      "name": "Size Doesn't Matter",
+      "desc": "Watch all Ant-Man films",
+      "icon_fa": "fa-solid fa-minimize",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_012",
+          "mcu_020",
+          "mcu_042"
+        ]
+      },
+      "bonus_xp": 75
+    },
+    {
+      "id": "black_panther_saga",
+      "name": "Wakanda Forever",
+      "desc": "Watch all Black Panther films",
+      "icon_fa": "fa-solid fa-paw",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_018",
+          "mcu_040"
+        ]
+      },
+      "bonus_xp": 75
+    },
+    {
+      "id": "curator",
+      "name": "Curator",
+      "desc": "Add 10 titles to your wishlist",
+      "icon_fa": "fa-solid fa-thumbtack",
+      "req": {
+        "type": "wishlist_min",
+        "count": 10
+      },
+      "bonus_xp": 50
+    },
+    {
+      "id": "halfway",
+      "name": "Halfway There",
+      "desc": "Watch at least 30 titles",
+      "icon_fa": "fa-solid fa-person-running",
+      "req": {
+        "type": "watched_min",
+        "count": 30
+      },
+      "bonus_xp": 150
+    },
+    {
+      "id": "completionist",
+      "name": "True Believer",
+      "desc": "Watch all released MCU titles",
+      "icon_fa": "fa-solid fa-star",
+      "req": {
+        "type": "all_released_watched"
+      },
+      "bonus_xp": 1000
+    },
+    {
+      "id": "fantastic_four_fan",
+      "name": "Fantastic!",
+      "desc": "Watch The Fantastic Four: First Steps",
+      "icon_fa": "fa-solid fa-4",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_057"
+        ]
+      },
+      "bonus_xp": 50
+    },
+    {
+      "id": "doomsday_survivor",
+      "name": "Doomsday Survivor",
+      "desc": "Watch Avengers: Doomsday",
+      "icon_fa": "fa-solid fa-skull",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_059"
+        ]
+      },
+      "bonus_xp": 75
+    },
+    {
+      "id": "secret_wars_witness",
+      "name": "Secret Wars Witness",
+      "desc": "Watch Avengers: Secret Wars",
+      "icon_fa": "fa-solid fa-eye",
+      "req": {
+        "type": "all_watched",
+        "mcu_ids": [
+          "mcu_062"
+        ]
+      },
+      "bonus_xp": 75
+    }
+  ],
+  "avatars": [
+    {
+      "id": "av_ant_man",
+      "name": "Ant-Man",
+      "file": "Ant_Man.jpg"
+    },
+    {
+      "id": "av_black_panther",
+      "name": "Black Panther",
+      "file": "Black_Panther.jpg"
+    },
+    {
+      "id": "av_black_widow",
+      "name": "Black Widow",
+      "file": "Black_Widow.jpg"
+    },
+    {
+      "id": "av_blade",
+      "name": "Blade",
+      "file": "Blade.jpg"
+    },
+    {
+      "id": "av_captain_america",
+      "name": "Captain America",
+      "file": "Captain_America.jpg"
+    },
+    {
+      "id": "av_captain_marvel",
+      "name": "Captain Marvel",
+      "file": "Captain_Marvel.jpg"
+    },
+    {
+      "id": "av_deadpool",
+      "name": "Deadpool",
+      "file": "Deadpool.png"
+    },
+    {
+      "id": "av_doctor_doom",
+      "name": "Doctor Doom",
+      "file": "Doctor_Doom.jpg"
+    },
+    {
+      "id": "av_doctor_strange",
+      "name": "Doctor Strange",
+      "file": "Doctor_Strange.jpg"
+    },
+    {
+      "id": "av_galactus",
+      "name": "Galactus",
+      "file": "Galactus.jpg"
+    },
+    {
+      "id": "av_ghost_rider",
+      "name": "Ghost Rider",
+      "file": "Ghost_Rider.jpg"
+    },
+    {
+      "id": "av_groot",
+      "name": "Groot",
+      "file": "Groot.jpg"
+    },
+    {
+      "id": "av_hawkeye",
+      "name": "Hawkeye",
+      "file": "Hawkeye.jpg"
+    },
+    {
+      "id": "av_hulk",
+      "name": "Hulk",
+      "file": "Hulk.jpg"
+    },
+    {
+      "id": "av_human_torch",
+      "name": "Human Torch",
+      "file": "Human_Torch.jpg"
+    },
+    {
+      "id": "av_iron_heart",
+      "name": "Ironheart",
+      "file": "Iron_Heart.jpg"
+    },
+    {
+      "id": "av_iron_man",
+      "name": "Iron Man",
+      "file": "Iron_Man.jpg"
+    },
+    {
+      "id": "av_kate_bishop",
+      "name": "Kate Bishop",
+      "file": "Kate_Bishop.jpg"
+    },
+    {
+      "id": "av_loki",
+      "name": "Loki",
+      "file": "Loki.jpg"
+    },
+    {
+      "id": "av_mobius",
+      "name": "Mobius",
+      "file": "Mobius.jpg"
+    },
+    {
+      "id": "av_moon_knight",
+      "name": "Moon Knight",
+      "file": "Moon_Knight.jpg"
+    },
+    {
+      "id": "av_nova",
+      "name": "Nova",
+      "file": "Nova.jpg"
+    },
+    {
+      "id": "av_omega",
+      "name": "Omega",
+      "file": "Omega.jpg"
+    },
+    {
+      "id": "av_rocket",
+      "name": "Rocket Raccoon",
+      "file": "Rocket_Raccoon.jpg"
+    },
+    {
+      "id": "av_scarlet_witch",
+      "name": "Scarlet Witch",
+      "file": "Scarlet_Witch.jpg"
+    },
+    {
+      "id": "av_thor",
+      "name": "Thor",
+      "file": "Thor.jpg"
+    },
+    {
+      "id": "av_us_agent",
+      "name": "U.S. Agent",
+      "file": "US_Agent.jpg"
+    },
+    {
+      "id": "av_venom",
+      "name": "Venom",
+      "file": "Venom.jpg"
+    },
+    {
+      "id": "av_vision",
+      "name": "Vision",
+      "file": "Vision.jpg"
+    },
+    {
+      "id": "av_winter_soldier",
+      "name": "Winter Soldier",
+      "file": "Winter_Soldier.jpg"
+    }
+  ],
+  "avatar_base_path": "/assets/app/avatars/",
+  "phase_colors": {
+    "phase_1": "#e23636",
+    "phase_2": "#f97316",
+    "phase_3": "#eab308",
+    "phase_4": "#22c55e",
+    "phase_5": "#3b82f6",
+    "phase_6": "#a855f7"
+  },
+  "type_ui": {
+    "movie": {
+      "label": "Movie",
+      "css_class": "tag-movie"
+    },
+    "series": {
+      "label": "Series",
+      "css_class": "tag-series"
+    },
+    "special_presentation": {
+      "label": "Special",
+      "css_class": "tag-special"
+    },
+    "short": {
+      "label": "Short",
+      "css_class": "tag-special"
+    }
+  }
+}

@@ -217,8 +217,9 @@
             "synopsis": "Bruce Banner, a scientist on the run from the U.S. Government, must find a cure for the monster he turns into whenever he loses his temper, before General Ross and a new Abomination destroy him.",
             "cast": [
                 {
-                    "star_id": "star_005",
+                    "star_id": null,
                     "character": "Bruce Banner / Hulk",
+                    "actor": "Edward Norton",
                     "type": "lead"
                 },
                 {
@@ -241,7 +242,7 @@
                     "platform": "Disney+",
                     "platform_id": "disney_plus",
                     "url": "https://www.disneyplus.com/movies/the-incredible-hulk/5FBG3tlRhMRM",
-                    "type": "subscription"
+                    "type": "stream"
                 }
             ],
             "links": {
