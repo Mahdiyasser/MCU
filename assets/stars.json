@@ -1,0 +1,2044 @@
+{
+    "stars": [
+        {
+            "id": "star_001",
+            "name": "Robert Downey Jr.",
+            "character": "Tony Stark / Iron Man / DR. Doom",
+            "image": "/assets/images/stars/star_001.jpg",
+            "nationality": "American",
+            "born": {
+                "date": "1965-04-04",
+                "place": "Manhattan, New York City, New York, USA"
+            },
+            "bio": "Robert John Downey Jr. is an American actor and producer. His career has been characterized by critical and popular success in his youth, followed by a period of substance abuse and legal troubles, before a dramatic career resurgence. He is widely regarded as one of the most talented actors of his generation. He is best known for his role as Tony Stark / Iron Man in the MCU, a role he played from 2008 to 2023 (and returning in 2026's Avengers: Doomsday).",
+            "social_media": {
+                "instagram": "https://www.instagram.com/robertdowneyjr/",
+                "twitter": "https://twitter.com/RobertDowneyJr"
+            },
+            "links": {
+                "imdb": "https://www.imdb.com/name/nm0000375/",
+                "wikipedia": "https://en.wikipedia.org/wiki/Robert_Downey_Jr."
+            },
+            "mcu_appearances": [
+                "mcu_001",
+                "mcu_003",
+                "mcu_006",
+                "mcu_007",
+                "mcu_011",
+                "mcu_013",
+                "mcu_016",
+                "mcu_019",
+                "mcu_022",
+                "mcu_053",
+                "mcu_059",
+                "mcu_002"
+            ]
+        },
+        {
+            "id": "star_002",
+            "name": "Chris Evans",
+            "character": "Steve Rogers / Captain America",
+            "image": "/assets/images/stars/star_002.jpg",
+            "born": {
+                "date": "1981-06-13",
+                "place": "Boston, Massachusetts, USA"
+            },
+            "nationality": "American",
+            "bio": "Christopher Robert Evans is an American actor. He began his career with television roles in the late 1990s before transitioning to feature films in the early 2000s. He is best known for playing Steve Rogers / Captain America in the MCU, a role he portrayed from 2011 to 2019 across numerous films.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/chrisevans/",
+                "twitter": "https://twitter.com/ChrisEvans",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Chris_Evans_(actor)",
+                "imdb": "https://www.imdb.com/name/nm0262635/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_005",
+                "mcu_006",
+                "mcu_009",
+                "mcu_011",
+                "mcu_013",
+                "mcu_019",
+                "mcu_022"
+            ]
+        },
+        {
+            "id": "star_003",
+            "name": "Scarlett Johansson",
+            "character": "Natasha Romanoff / Black Widow",
+            "image": "/assets/images/stars/star_003.jpg",
+            "born": {
+                "date": "1984-11-22",
+                "place": "Manhattan, New York City, New York, USA"
+            },
+            "nationality": "American",
+            "bio": "Scarlett Ingrid Johansson is an American actress and singer. She was the world's highest-paid actress in 2018 and 2019, and has featured multiple times on the Forbes Celebrity 100 list. In the MCU, she played the beloved spy and assassin Natasha Romanoff / Black Widow across 9 films, from 2010 to 2021.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Scarlett_Johansson",
+                "imdb": "https://www.imdb.com/name/nm0424060/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_003",
+                "mcu_006",
+                "mcu_009",
+                "mcu_011",
+                "mcu_013",
+                "mcu_019",
+                "mcu_022",
+                "mcu_027"
+            ]
+        },
+        {
+            "id": "star_004",
+            "name": "Chris Hemsworth",
+            "character": "Thor Odinson",
+            "image": "/assets/images/stars/star_004.jpg",
+            "born": {
+                "date": "1983-08-11",
+                "place": "Melbourne, Victoria, Australia"
+            },
+            "nationality": "Australian",
+            "bio": "Christopher Hemsworth is an Australian actor. He is best known for his portrayal of Thor in the MCU. Hemsworth first caught attention as Kim Hyde in the Australian TV series Home and Away before moving to Hollywood. He has portrayed Thor across numerous MCU films and continues to do so.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/chrishemsworth/",
+                "twitter": "https://twitter.com/chrishemsworth",
+                "facebook": "https://www.facebook.com/chrishemsworth"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Chris_Hemsworth",
+                "imdb": "https://www.imdb.com/name/nm1165110/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_004",
+                "mcu_006",
+                "mcu_008",
+                "mcu_011",
+                "mcu_017",
+                "mcu_019",
+                "mcu_022",
+                "mcu_036"
+            ]
+        },
+        {
+            "id": "star_005",
+            "name": "Mark Ruffalo",
+            "character": "Bruce Banner / Hulk",
+            "image": "/assets/images/stars/star_005.jpg",
+            "born": {
+                "date": "1967-11-22",
+                "place": "Kenosha, Wisconsin, USA"
+            },
+            "nationality": "American",
+            "bio": "Mark Alan Ruffalo is an American actor, director, and activist. He is known for playing Bruce Banner / Hulk in the MCU, having taken over the role from Edward Norton. Ruffalo has appeared in numerous MCU films and the She-Hulk: Attorney at Law Disney+ series.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/markruffalo/",
+                "twitter": "https://twitter.com/MarkRuffalo",
+                "facebook": "https://www.facebook.com/markruffalo"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Mark_Ruffalo",
+                "imdb": "https://www.imdb.com/name/nm0749263/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_006",
+                "mcu_011",
+                "mcu_017",
+                "mcu_019",
+                "mcu_022",
+                "mcu_038",
+                "mcu_002"
+            ]
+        },
+        {
+            "id": "star_006",
+            "name": "Jeremy Renner",
+            "character": "Clint Barton / Hawkeye",
+            "image": "/assets/images/stars/star_006.jpg",
+            "born": {
+                "date": "1971-01-07",
+                "place": "Modesto, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Jeremy Lee Renner is an American actor and musician. He is known for his portrayal of Clint Barton / Hawkeye in the MCU, appearing in multiple films and the Disney+ series Hawkeye. He has been nominated for Academy Awards for Best Actor and Best Supporting Actor for other roles.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/jeremyrenner/",
+                "twitter": "https://twitter.com/Renner4Real",
+                "facebook": "https://www.facebook.com/jeremyrenner"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Jeremy_Renner",
+                "imdb": "https://www.imdb.com/name/nm0719637/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_004",
+                "mcu_006",
+                "mcu_011",
+                "mcu_013",
+                "mcu_022",
+                "mcu_031"
+            ]
+        },
+        {
+            "id": "star_007",
+            "name": "Samuel L. Jackson",
+            "character": "Nick Fury",
+            "image": "/assets/images/stars/star_007.jpg",
+            "born": {
+                "date": "1948-12-21",
+                "place": "Washington, D.C., USA"
+            },
+            "nationality": "American",
+            "bio": "Samuel Leroy Jackson is an American actor and producer. One of the most widely recognized actors of his generation, the films in which he has appeared have collectively grossed over $27 billion worldwide. He plays Nick Fury, the founder of S.H.I.E.L.D. and key figure in the MCU, appearing in many films and the Secret Invasion series.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/samuelljackson/",
+                "twitter": "https://twitter.com/SamuelLJackson",
+                "facebook": "https://www.facebook.com/SamuelLJackson"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Samuel_L._Jackson",
+                "imdb": "https://www.imdb.com/name/nm0000168/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_001",
+                "mcu_003",
+                "mcu_004",
+                "mcu_005",
+                "mcu_006",
+                "mcu_009",
+                "mcu_011",
+                "mcu_021",
+                "mcu_022",
+                "mcu_023",
+                "mcu_044"
+            ]
+        },
+        {
+            "id": "star_008",
+            "name": "Gwyneth Paltrow",
+            "character": "Pepper Potts",
+            "image": "/assets/images/stars/star_008.jpg",
+            "born": {
+                "date": "1972-09-27",
+                "place": "Los Angeles, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Gwyneth Kate Paltrow is an American actress, businesswoman, and author. She played Pepper Potts, Tony Stark's love interest and later wife, across multiple MCU films from 2008 to 2019.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/gwynethpaltrow/",
+                "twitter": "https://twitter.com/GwynethPaltrow",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Gwyneth_Paltrow",
+                "imdb": "https://www.imdb.com/name/nm0000569/",
+                "official_site": "https://goop.com"
+            },
+            "mcu_appearances": [
+                "mcu_001",
+                "mcu_003",
+                "mcu_007",
+                "mcu_019",
+                "mcu_022"
+            ]
+        },
+        {
+            "id": "star_009",
+            "name": "Don Cheadle",
+            "character": "James Rhodes / War Machine / Iron Patriot",
+            "image": "/assets/images/stars/star_009.jpg",
+            "born": {
+                "date": "1964-11-29",
+                "place": "Kansas City, Missouri, USA"
+            },
+            "nationality": "American",
+            "bio": "Donald Frank Cheadle Jr. is an American actor, director, producer, and writer. He took over the role of James Rhodes / War Machine from Terrence Howard in Iron Man 2, and has continued the role through the Armor Wars Disney+ series.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/DonCheadle/",
+                "twitter": "https://twitter.com/DonCheadle",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Don_Cheadle",
+                "imdb": "https://www.imdb.com/name/nm0000332/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_003",
+                "mcu_007",
+                "mcu_011",
+                "mcu_013",
+                "mcu_022",
+                "mcu_053"
+            ]
+        },
+        {
+            "id": "star_010",
+            "name": "Chris Pratt",
+            "character": "Peter Quill / Star-Lord",
+            "image": "/assets/images/stars/star_010.jpg",
+            "born": {
+                "date": "1979-06-21",
+                "place": "Virginia, Minnesota, USA"
+            },
+            "nationality": "American",
+            "bio": "Christopher Michael Pratt is an American actor. He is known for starring in both television and film, both comedic and dramatic roles. He plays Peter Quill / Star-Lord, the leader of the Guardians of the Galaxy across the MCU.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/prattprattpratt/",
+                "twitter": "https://twitter.com/prattprattpratt",
+                "facebook": "https://www.facebook.com/OfficialChrisPratt"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Chris_Pratt",
+                "imdb": "https://www.imdb.com/name/nm0695435/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_010",
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_036",
+                "mcu_041",
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_011",
+            "name": "Zoe Saldana",
+            "character": "Gamora",
+            "image": "/assets/images/stars/star_011.jpg",
+            "born": {
+                "date": "1978-06-19",
+                "place": "Passaic, New Jersey, USA"
+            },
+            "nationality": "American",
+            "bio": "Zoe Yadira Saldana-Perego is an American actress. She is known for her roles in blockbuster science fiction films, including Avatar and the MCU's Guardians of the Galaxy franchise, where she plays Gamora, daughter of Thanos.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/zoesaldana/",
+                "twitter": "https://twitter.com/ZoeSaldana",
+                "facebook": "https://www.facebook.com/Zoe.Saldana"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Zoe_Saldana",
+                "imdb": "https://www.imdb.com/name/nm0757855/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_010",
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_012",
+            "name": "Dave Bautista",
+            "character": "Drax the Destroyer",
+            "image": "/assets/images/stars/star_012.jpg",
+            "born": {
+                "date": "1969-01-18",
+                "place": "Washington, D.C., USA"
+            },
+            "nationality": "American",
+            "bio": "David Michael Bautista Jr. is an American actor, author, and former professional wrestler. He played Drax the Destroyer in the Guardians of the Galaxy franchise within the MCU.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/davebautista/",
+                "twitter": "https://twitter.com/DaveBautista",
+                "facebook": "https://www.facebook.com/DaveBautista"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Dave_Bautista",
+                "imdb": "https://www.imdb.com/name/nm1176985/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_010",
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_041",
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_013",
+            "name": "Vin Diesel",
+            "character": "Groot (voice)",
+            "image": "/assets/images/stars/star_013.jpg",
+            "born": {
+                "date": "1967-07-18",
+                "place": "Alameda County, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Mark Sinclair, known professionally as Vin Diesel, is an American actor, producer, director, and screenwriter. He voices Groot in the Guardians of the Galaxy franchise, with his only dialogue being variations of 'I am Groot.'",
+            "social_media": {
+                "instagram": "https://www.instagram.com/vindiesel/",
+                "twitter": "https://twitter.com/VinDiesel",
+                "facebook": "https://www.facebook.com/vindiesel"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Vin_Diesel",
+                "imdb": "https://www.imdb.com/name/nm0004874/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_010",
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_037",
+                "mcu_041",
+                "mcu_043",
+                "mcu_045"
+            ]
+        },
+        {
+            "id": "star_014",
+            "name": "Bradley Cooper",
+            "character": "Rocket Raccoon (voice)",
+            "image": "/assets/images/stars/star_014.jpg",
+            "born": {
+                "date": "1975-01-05",
+                "place": "Philadelphia, Pennsylvania, USA"
+            },
+            "nationality": "American",
+            "bio": "Bradley Charles Cooper is an American actor and filmmaker. He voices Rocket Raccoon in the Guardians of the Galaxy franchise. He is a four-time Academy Award nominee and one of the highest-paid actors in the world.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Bradley_Cooper",
+                "imdb": "https://www.imdb.com/name/nm0177896/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_010",
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_041",
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_015",
+            "name": "Tom Holland",
+            "character": "Peter Parker / Spider-Man",
+            "image": "/assets/images/stars/star_015.jpg",
+            "born": {
+                "date": "1996-06-01",
+                "place": "Kingston upon Thames, Surrey, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Thomas Stanley Holland is an English actor. He is best known for playing Peter Parker / Spider-Man in the MCU, having taken on the role at age 19. He has starred in three standalone Spider-Man films and appeared in multiple other MCU productions.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/tomholland2013/",
+                "twitter": "https://twitter.com/TomHolland1996",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Tom_Holland",
+                "imdb": "https://www.imdb.com/name/nm4043618/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_013",
+                "mcu_016",
+                "mcu_019",
+                "mcu_022",
+                "mcu_023",
+                "mcu_032",
+                "mcu_060"
+            ]
+        },
+        {
+            "id": "star_016",
+            "name": "Benedict Cumberbatch",
+            "character": "Stephen Strange / Doctor Strange",
+            "image": "/assets/images/stars/star_016.jpg",
+            "born": {
+                "date": "1976-07-19",
+                "place": "Hammersmith, London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Benedict Timothy Carlton Cumberbatch is an English actor. He plays Stephen Strange / Doctor Strange in the MCU, a former neurosurgeon who becomes the Sorcerer Supreme. He has appeared in multiple MCU films and is set to continue the role.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Benedict_Cumberbatch",
+                "imdb": "https://www.imdb.com/name/nm1212722/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_014",
+                "mcu_019",
+                "mcu_022",
+                "mcu_032",
+                "mcu_034"
+            ]
+        },
+        {
+            "id": "star_017",
+            "name": "Chadwick Boseman",
+            "character": "T'Challa / Black Panther",
+            "image": "/assets/images/stars/star_017.jpg",
+            "born": {
+                "date": "1976-11-29",
+                "place": "Anderson, South Carolina, USA"
+            },
+            "died": "2020-08-28",
+            "age_at_death": 43,
+            "nationality": "American",
+            "bio": "Chadwick Aaron Boseman was an American actor. He is best known for his portrayal of T'Challa / Black Panther in the MCU, from 2016's Captain America: Civil War until his death in 2020. He tragically passed away from colon cancer, a diagnosis he kept private throughout his MCU career. He became a cultural icon and symbol of heroism both on and off screen.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/chadwickboseman/",
+                "twitter": "https://twitter.com/chadwickboseman",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Chadwick_Boseman",
+                "imdb": "https://www.imdb.com/name/nm1569276/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_013",
+                "mcu_018",
+                "mcu_019",
+                "mcu_022"
+            ]
+        },
+        {
+            "id": "star_018",
+            "name": "Brie Larson",
+            "character": "Carol Danvers / Captain Marvel",
+            "image": "/assets/images/stars/star_018.jpg",
+            "born": {
+                "date": "1989-10-01",
+                "place": "Sacramento, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Brianne Sidonie Desaulniers, known professionally as Brie Larson, is an American actress, filmmaker, and activist. She plays Carol Danvers / Captain Marvel in the MCU, one of the universe's most powerful heroes. An Academy Award winner for Best Actress for 'Room' (2015).",
+            "social_media": {
+                "instagram": "https://www.instagram.com/brielarson/",
+                "twitter": "https://twitter.com/brielarson",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Brie_Larson",
+                "imdb": "https://www.imdb.com/name/nm0488953/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_021",
+                "mcu_022",
+                "mcu_047"
+            ]
+        },
+        {
+            "id": "star_019",
+            "name": "Paul Rudd",
+            "character": "Scott Lang / Ant-Man",
+            "image": "/assets/images/stars/star_019.jpg",
+            "born": {
+                "date": "1969-04-06",
+                "place": "Passaic, New Jersey, USA"
+            },
+            "nationality": "American",
+            "bio": "Paul Stephen Rudd is an American actor, comedian, writer, and producer. He is known for playing Scott Lang / Ant-Man in the MCU across three standalone films and additional appearances. He is also widely recognized for his seemingly ageless appearance.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/paulrudd/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Paul_Rudd",
+                "imdb": "https://www.imdb.com/name/nm0748620/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_012",
+                "mcu_013",
+                "mcu_020",
+                "mcu_022",
+                "mcu_042"
+            ]
+        },
+        {
+            "id": "star_020",
+            "name": "Evangeline Lilly",
+            "character": "Hope Van Dyne / The Wasp",
+            "image": "/assets/images/stars/star_020.jpg",
+            "born": {
+                "date": "1979-08-03",
+                "place": "Fort Saskatchewan, Alberta, Canada"
+            },
+            "nationality": "Canadian",
+            "bio": "Nicole Evangeline Lilly is a Canadian actress and author. She plays Hope Van Dyne / The Wasp in the MCU's Ant-Man franchise.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/evangelinelilly/",
+                "twitter": null,
+                "facebook": "https://www.facebook.com/EvangelineLilly"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Evangeline_Lilly",
+                "imdb": "https://www.imdb.com/name/nm1397171/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_012",
+                "mcu_020",
+                "mcu_042"
+            ]
+        },
+        {
+            "id": "star_021",
+            "name": "Tom Hiddleston",
+            "character": "Loki Laufeyson / Loki",
+            "image": "/assets/images/stars/star_021.jpg",
+            "born": {
+                "date": "1981-02-09",
+                "place": "Westminster, London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Thomas William Hiddleston is an English actor. He is best known for his portrayal of Loki, the God of Mischief and brother of Thor, in the MCU. He has appeared in multiple films and starred in the Disney+ series Loki.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/twhiddleston/",
+                "twitter": "https://twitter.com/twhiddleston",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Tom_Hiddleston",
+                "imdb": "https://www.imdb.com/name/nm1089991/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_004",
+                "mcu_006",
+                "mcu_008",
+                "mcu_017",
+                "mcu_022",
+                "mcu_026",
+                "mcu_046"
+            ]
+        },
+        {
+            "id": "star_022",
+            "name": "Elizabeth Olsen",
+            "character": "Wanda Maximoff / Scarlet Witch",
+            "image": "/assets/images/stars/star_022.jpg",
+            "born": {
+                "date": "1989-02-16",
+                "place": "Sherman Oaks, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Elizabeth Chase Olsen is an American actress. She plays Wanda Maximoff / Scarlet Witch in the MCU, a powerful reality-warping sorceress. She starred in the groundbreaking Disney+ series WandaVision and appeared in multiple MCU films.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/elizabetholsen/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Elizabeth_Olsen",
+                "imdb": "https://www.imdb.com/name/nm1520511/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_011",
+                "mcu_013",
+                "mcu_019",
+                "mcu_022",
+                "mcu_024",
+                "mcu_034"
+            ]
+        },
+        {
+            "id": "star_023",
+            "name": "Paul Bettany",
+            "character": "Vision / J.A.R.V.I.S. (voice)",
+            "image": "/assets/images/stars/star_023.jpg",
+            "born": {
+                "date": "1971-05-27",
+                "place": "Shepherd's Bush, London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Paul Bettany is an English actor. He originally voiced J.A.R.V.I.S., Tony Stark's AI assistant, before becoming the Vision, a sentient android created from J.A.R.V.I.S.'s neural network and the Mind Stone. He starred alongside Elizabeth Olsen in WandaVision.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/paul.bettany/",
+                "twitter": "https://twitter.com/Paul_Bettany",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Paul_Bettany",
+                "imdb": "https://www.imdb.com/name/nm0079273/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_001",
+                "mcu_003",
+                "mcu_007",
+                "mcu_011",
+                "mcu_013",
+                "mcu_019",
+                "mcu_022",
+                "mcu_024"
+            ]
+        },
+        {
+            "id": "star_024",
+            "name": "Anthony Mackie",
+            "character": "Sam Wilson / Falcon / Captain America",
+            "image": "/assets/images/stars/star_024.jpg",
+            "born": {
+                "date": "1978-09-23",
+                "place": "New Orleans, Louisiana, USA"
+            },
+            "nationality": "American",
+            "bio": "Anthony Mackie is an American actor. He plays Sam Wilson, who served as the Falcon before becoming the new Captain America in the MCU. He starred in the Disney+ series The Falcon and the Winter Soldier and leads the upcoming Captain America: Brave New World.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/anthonymackie/",
+                "twitter": "https://twitter.com/AnthonyMackie",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Anthony_Mackie",
+                "imdb": "https://www.imdb.com/name/nm1107001/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_009",
+                "mcu_011",
+                "mcu_013",
+                "mcu_019",
+                "mcu_022",
+                "mcu_025",
+                "mcu_053",
+                "mcu_055",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_025",
+            "name": "Sebastian Stan",
+            "character": "Bucky Barnes / Winter Soldier / White Wolf",
+            "image": "/assets/images/stars/star_025.jpg",
+            "born": {
+                "date": "1982-08-13",
+                "place": "Constanța, Romania"
+            },
+            "nationality": "Romanian-American",
+            "bio": "Sebastian Stan is a Romanian-American actor. He plays Bucky Barnes, Steve Rogers's best friend who was brainwashed into the deadly assassin known as the Winter Soldier. He co-starred in The Falcon and the Winter Soldier Disney+ series.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/imsebastianstan/",
+                "twitter": "https://twitter.com/SebastianStan",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Sebastian_Stan",
+                "imdb": "https://www.imdb.com/name/nm2934314/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_005",
+                "mcu_009",
+                "mcu_013",
+                "mcu_019",
+                "mcu_022",
+                "mcu_025",
+                "mcu_055"
+            ]
+        },
+        {
+            "id": "star_026",
+            "name": "Letitia Wright",
+            "character": "Shuri / Black Panther",
+            "image": "/assets/images/stars/star_026.jpg",
+            "born": {
+                "date": "1993-10-31",
+                "place": "Georgetown, Guyana"
+            },
+            "nationality": "British-Guyanese",
+            "bio": "Letitia Michelle Wright is a British-Guyanese actress. She plays Shuri, the princess of Wakanda and a technological genius, who takes on the Black Panther mantle in Black Panther: Wakanda Forever.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/letitiawright/",
+                "twitter": "https://twitter.com/letitiawright",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Letitia_Wright",
+                "imdb": "https://www.imdb.com/name/nm4005531/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_018",
+                "mcu_019",
+                "mcu_022",
+                "mcu_040"
+            ]
+        },
+        {
+            "id": "star_027",
+            "name": "Danai Gurira",
+            "character": "Okoye",
+            "image": "/assets/images/stars/star_027.jpg",
+            "born": {
+                "date": "1978-02-14",
+                "place": "Grinnell, Iowa, USA"
+            },
+            "nationality": "American-Zimbabwean",
+            "bio": "Danai Jekesai Gurira is a Zimbabwean-American actress and playwright. She plays Okoye, the general of the Dora Milaje (Wakanda's elite female warriors) in the MCU.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/danaigurira/",
+                "twitter": "https://twitter.com/DanaiGurira",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Danai_Gurira",
+                "imdb": "https://www.imdb.com/name/nm2499064/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_018",
+                "mcu_019",
+                "mcu_022",
+                "mcu_040"
+            ]
+        },
+        {
+            "id": "star_028",
+            "name": "Winston Duke",
+            "character": "M'Baku",
+            "image": "/assets/images/stars/star_028.jpg",
+            "born": {
+                "date": "1986-11-15",
+                "place": "Argyle, Saint Vincent and the Grenadines"
+            },
+            "nationality": "Trinidadian-American",
+            "bio": "Winston Duke is a Trinidadian-American actor. He plays M'Baku, the powerful leader of the Jabari Tribe and later king of Wakanda, in the MCU's Black Panther franchise.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/mrdwinstonduke/",
+                "twitter": "https://twitter.com/WinstonDuke",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Winston_Duke",
+                "imdb": "https://www.imdb.com/name/nm4793987/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_018",
+                "mcu_022",
+                "mcu_040"
+            ]
+        },
+        {
+            "id": "star_029",
+            "name": "Tessa Thompson",
+            "character": "Valkyrie",
+            "image": "/assets/images/stars/star_029.jpg",
+            "born": {
+                "date": "1983-10-03",
+                "place": "Los Angeles, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Tessa Lynne Thompson is an American actress. She plays Brunnhilde / Valkyrie in the MCU, an Asgardian warrior and later king of New Asgard.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/tessamaethompson/",
+                "twitter": "https://twitter.com/TessaThompson_x",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Tessa_Thompson",
+                "imdb": "https://www.imdb.com/name/nm2794962/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_017",
+                "mcu_022",
+                "mcu_036",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_030",
+            "name": "Josh Brolin",
+            "character": "Thanos",
+            "image": "/assets/images/stars/star_030.jpg",
+            "born": {
+                "date": "1968-02-12",
+                "place": "Santa Monica, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Josh James Brolin is an American actor and producer. He provides both the voice and motion-capture performance for Thanos, the primary antagonist of the MCU's Infinity Saga, wielding the Infinity Gauntlet to erase half of all life in the universe.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/joshbrolin/",
+                "twitter": "https://twitter.com/joshbrolin",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Josh_Brolin",
+                "imdb": "https://www.imdb.com/name/nm0000982/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_010",
+                "mcu_019",
+                "mcu_022"
+            ]
+        },
+        {
+            "id": "star_031",
+            "name": "Cate Blanchett",
+            "character": "Hela",
+            "image": "/assets/images/stars/star_031.jpg",
+            "born": {
+                "date": "1969-05-14",
+                "place": "Melbourne, Victoria, Australia"
+            },
+            "nationality": "Australian",
+            "bio": "Catherine Élise Blanchett is an Australian actress and theatre director. She played Hela, the Goddess of Death and sister of Thor, in Thor: Ragnarok. A two-time Academy Award winner.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Cate_Blanchett",
+                "imdb": "https://www.imdb.com/name/nm0000949/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_017"
+            ]
+        },
+        {
+            "id": "star_032",
+            "name": "Michael B. Jordan",
+            "character": "Erik Killmonger",
+            "image": "/assets/images/stars/star_032.jpg",
+            "born": {
+                "date": "1987-02-09",
+                "place": "Santa Ana, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Michael Bakari Jordan is an American actor and filmmaker. He played N'Jadaka / Erik Killmonger, the compelling villain of Black Panther, in one of the MCU's most praised antagonist performances.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/michaelbjordan/",
+                "twitter": "https://twitter.com/michaelb4jordan",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Michael_B._Jordan",
+                "imdb": "https://www.imdb.com/name/nm0430107/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_018"
+            ]
+        },
+        {
+            "id": "star_033",
+            "name": "Pom Klementieff",
+            "character": "Mantis",
+            "image": "/assets/images/stars/star_033.jpg",
+            "born": {
+                "date": "1986-05-03",
+                "place": "Quebec City, Quebec, Canada"
+            },
+            "nationality": "French-Canadian",
+            "bio": "Pom Klementieff is a French-Canadian actress. She plays Mantis, an empath with telepathic abilities and member of the Guardians of the Galaxy, in the MCU.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/pomklementieff/",
+                "twitter": "https://twitter.com/PomKlementieff",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Pom_Klementieff",
+                "imdb": "https://www.imdb.com/name/nm2005452/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_036",
+                "mcu_041",
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_034",
+            "name": "Karen Gillan",
+            "character": "Nebula",
+            "image": "/assets/images/stars/star_034.jpg",
+            "born": {
+                "date": "1987-11-28",
+                "place": "Inverness, Scotland, UK"
+            },
+            "nationality": "Scottish",
+            "bio": "Karen Sheila Gillan is a Scottish actress and director. She plays Nebula, the cybernetically enhanced daughter of Thanos and eventual ally of the Avengers, in the MCU.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/karengillanofficial/",
+                "twitter": "https://twitter.com/karengillan",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Karen_Gillan",
+                "imdb": "https://www.imdb.com/name/nm2394187/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_015",
+                "mcu_019",
+                "mcu_022",
+                "mcu_041",
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_035",
+            "name": "Idris Elba",
+            "character": "Heimdall",
+            "image": "/assets/images/stars/star_035.jpg",
+            "born": {
+                "date": "1972-09-06",
+                "place": "Hackney, London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Idrissa Akuna Elba OBE is a British actor, writer, rapper, and DJ. He plays Heimdall, the all-seeing, all-hearing guardian of the Bifrost Bridge in Asgard, in the MCU's Thor films.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/idriselba/",
+                "twitter": "https://twitter.com/idriselba",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Idris_Elba",
+                "imdb": "https://www.imdb.com/name/nm0252961/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_004",
+                "mcu_008",
+                "mcu_017",
+                "mcu_019"
+            ]
+        },
+        {
+            "id": "star_036",
+            "name": "Benedict Wong",
+            "character": "Wong",
+            "image": "/assets/images/stars/star_036.jpg",
+            "born": {
+                "date": "1971-07-03",
+                "place": "Eccles, Salford, Greater Manchester, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Benedict Timothy Wong is a British actor. He plays Wong, the Sorcerer Supreme of Kamar-Taj, in the MCU. He has appeared in multiple MCU films and series.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/benedictwong/",
+                "twitter": "https://twitter.com/BenedictWong",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Benedict_Wong",
+                "imdb": "https://www.imdb.com/name/nm0938950/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_014",
+                "mcu_019",
+                "mcu_034"
+            ]
+        },
+        {
+            "id": "star_037",
+            "name": "Taron Egerton",
+            "character": "Scott Lang / Ant-Man (upcoming)",
+            "image": "/assets/images/stars/star_037.jpg",
+            "born": {
+                "date": "1989-11-10",
+                "place": "Birkenhead, Merseyside, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Taron David Egerton is a Welsh actor. Best known for the Kingsman franchise and his Academy Award-nominated role as Elton John in Rocketman, he has been cast to play a new version of Scott Lang / Ant-Man in the upcoming MCU slate.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/taronegerton/",
+                "twitter": "https://twitter.com/TaronEgerton",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Taron_Egerton",
+                "imdb": "https://www.imdb.com/name/nm3997082/",
+                "official_site": null
+            },
+            "mcu_appearances": []
+        },
+        {
+            "id": "star_038",
+            "name": "Mahershala Ali",
+            "character": "Eric Brooks / Blade",
+            "image": "/assets/images/stars/star_038.jpg",
+            "born": {
+                "date": "1974-02-16",
+                "place": "Oakland, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Mahershala Ali is an American actor and rapper. A two-time Academy Award winner for Best Supporting Actor, he has been cast as Eric Brooks / Blade, the daywalker vampire hunter, in the upcoming MCU Blade film.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Mahershala_Ali",
+                "imdb": "https://www.imdb.com/name/nm0027572/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_030",
+                "mcu_061"
+            ]
+        },
+        {
+            "id": "star_039",
+            "name": "Oscar Isaac",
+            "character": "Marc Spector / Moon Knight",
+            "image": "/assets/images/stars/star_039.jpg",
+            "born": {
+                "date": "1979-03-09",
+                "place": "Havana, Cuba"
+            },
+            "nationality": "American-Guatemalan",
+            "bio": "Oscar Isaac Hernández Estrada is an American-Guatemalan actor. He plays Marc Spector / Moon Knight, a mercenary with dissociative identity disorder granted powers by the Egyptian moon god Khonshu, in the Disney+ series Moon Knight.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/oscar__isaac/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Oscar_Isaac",
+                "imdb": "https://www.imdb.com/name/nm1209966/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_033"
+            ]
+        },
+        {
+            "id": "star_040",
+            "name": "Tatiana Maslany",
+            "character": "Jennifer Walters / She-Hulk",
+            "image": "/assets/images/stars/star_040.jpg",
+            "born": {
+                "date": "1985-09-22",
+                "place": "Regina, Saskatchewan, Canada"
+            },
+            "nationality": "Canadian",
+            "bio": "Tatiana Gabrielle Maslany is a Canadian actress, best known for her Primetime Emmy Award-winning performance in Orphan Black. She plays Jennifer Walters / She-Hulk, a lawyer and Bruce Banner's cousin who gains Hulk-like powers, in the Disney+ series She-Hulk: Attorney at Law.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/tatianamaslany/",
+                "twitter": "https://twitter.com/tatianamaslany",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Tatiana_Maslany",
+                "imdb": "https://www.imdb.com/name/nm1137209/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_038"
+            ]
+        },
+        {
+            "id": "star_041",
+            "name": "Simu Liu",
+            "character": "Xu Shang-Chi",
+            "image": "/assets/images/stars/star_041.jpg",
+            "born": {
+                "date": "1989-04-19",
+                "place": "Harbin, Heilongjiang, China"
+            },
+            "nationality": "Canadian-Chinese",
+            "bio": "Simu Liu is a Canadian-Chinese actor. He plays Xu Shang-Chi, a martial arts expert who becomes a superhero, in Shang-Chi and the Legend of the Ten Rings.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/simuliu/",
+                "twitter": "https://twitter.com/SimuLiu",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Simu_Liu",
+                "imdb": "https://www.imdb.com/name/nm4508258/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_029"
+            ]
+        },
+        {
+            "id": "star_042",
+            "name": "Iman Vellani",
+            "character": "Kamala Khan / Ms. Marvel",
+            "image": "/assets/images/stars/star_042.jpg",
+            "born": {
+                "date": "2002-09-10",
+                "place": "Markham, Ontario, Canada"
+            },
+            "nationality": "Canadian-Pakistani",
+            "bio": "Iman Vellani is a Canadian-Pakistani actress. She plays Kamala Khan / Ms. Marvel, a Pakistani-American teenager and huge Captain Marvel fan who discovers she has superpowers, in the Disney+ series Ms. Marvel and The Marvels.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/imanvellani/",
+                "twitter": "https://twitter.com/imanvellani",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Iman_Vellani",
+                "imdb": "https://www.imdb.com/name/nm11680972/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_035",
+                "mcu_047",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_043",
+            "name": "Jonathan Majors",
+            "character": "Kang the Conqueror / He Who Remains",
+            "image": "/assets/images/stars/star_043.jpg",
+            "born": {
+                "date": "1989-09-07",
+                "place": "Lompoc, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Jonathan Michael Majors is an American actor. He played variants of Kang the Conqueror across the MCU, including He Who Remains in Loki and the main villain of Ant-Man and the Wasp: Quantumania. He was written out of the MCU following legal issues.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Jonathan_Majors",
+                "imdb": "https://www.imdb.com/name/nm5488886/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_026",
+                "mcu_042",
+                "mcu_046"
+            ]
+        },
+        {
+            "id": "star_044",
+            "name": "Hailee Steinfeld",
+            "character": "Kate Bishop / Hawkeye",
+            "image": "/assets/images/stars/star_044.jpg",
+            "born": {
+                "date": "1996-12-11",
+                "place": "Tarzana, Los Angeles, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Hailee Steinfeld is an American actress and singer. She plays Kate Bishop, a skilled archer who idolizes Hawkeye and eventually takes on the title, in the Disney+ series Hawkeye.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/haileesteinfeld/",
+                "twitter": "https://twitter.com/HaileeSteinfeld",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Hailee_Steinfeld",
+                "imdb": "https://www.imdb.com/name/nm2794962/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_031",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_045",
+            "name": "Florence Pugh",
+            "character": "Yelena Belova / Black Widow",
+            "image": "/assets/images/stars/star_045.jpg",
+            "born": {
+                "date": "1996-01-03",
+                "place": "Oxford, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Florence Rose Pugh is an English actress. She plays Yelena Belova, another Black Widow and Natasha Romanoff's surrogate sister, in the MCU. She debuted in Black Widow (2021) and also appeared in Hawkeye.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/florencepugh/",
+                "twitter": "https://twitter.com/Florence_Pugh",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Florence_Pugh",
+                "imdb": "https://www.imdb.com/name/nm6073955/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_027",
+                "mcu_031",
+                "mcu_055",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_046",
+            "name": "Wunmi Mosaku",
+            "character": "Hunter B-15",
+            "image": "/assets/images/stars/star_046.jpg",
+            "born": {
+                "date": "1986-01-31",
+                "place": "Lagos, Nigeria"
+            },
+            "nationality": "British-Nigerian",
+            "bio": "Wunmi Mosaku is a British-Nigerian actress. She plays Hunter B-15, a TVA (Time Variance Authority) agent, in the Disney+ series Loki.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/wunmimosaku/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Wunmi_Mosaku",
+                "imdb": "https://www.imdb.com/name/nm2780342/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_026",
+                "mcu_046"
+            ]
+        },
+        {
+            "id": "star_047",
+            "name": "Gugu Mbatha-Raw",
+            "character": "Ravonna Renslayer",
+            "image": "/assets/images/stars/star_047.jpg",
+            "born": {
+                "date": "1983-04-21",
+                "place": "Oxford, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Gugulethu Sophia Mbatha-Raw is an English actress. She plays Ravonna Renslayer, a TVA judge, in the Disney+ series Loki.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/gugumbatharaw/",
+                "twitter": "https://twitter.com/GuguMbathaRaw",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Gugu_Mbatha-Raw",
+                "imdb": "https://www.imdb.com/name/nm2811575/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_026",
+                "mcu_046"
+            ]
+        },
+        {
+            "id": "star_048",
+            "name": "Awkwafina",
+            "character": "Katy Chen",
+            "image": "/assets/images/stars/star_048.jpg",
+            "born": {
+                "date": "1988-06-02",
+                "place": "Forest Hills, Queens, New York City, New York, USA"
+            },
+            "nationality": "American",
+            "bio": "Nora Lum, known professionally as Awkwafina, is an American actress, rapper, and comedian. She plays Katy Chen, Shang-Chi's best friend, in Shang-Chi and the Legend of the Ten Rings.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/awkwafina/",
+                "twitter": "https://twitter.com/awkwafina",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Awkwafina",
+                "imdb": "https://www.imdb.com/name/nm5424992/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_029"
+            ]
+        },
+        {
+            "id": "star_049",
+            "name": "Salma Hayek Pinault",
+            "character": "Ajak",
+            "image": "/assets/images/stars/star_049.jpg",
+            "born": {
+                "date": "1966-09-02",
+                "place": "Coatzacoalcos, Veracruz, Mexico"
+            },
+            "nationality": "Mexican-American",
+            "bio": "Salma Hayek Pinault is a Mexican-American actress and film producer. She plays Ajak, the leader of the Eternals, in the MCU's Eternals (2021).",
+            "social_media": {
+                "instagram": "https://www.instagram.com/salmahayek/",
+                "twitter": "https://twitter.com/SalmaHayek",
+                "facebook": "https://www.facebook.com/salmahayek"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Salma_Hayek",
+                "imdb": "https://www.imdb.com/name/nm0000161/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_030"
+            ]
+        },
+        {
+            "id": "star_050",
+            "name": "Angelina Jolie",
+            "character": "Thena",
+            "image": "/assets/images/stars/star_050.jpg",
+            "born": {
+                "date": "1975-06-04",
+                "place": "Los Angeles, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Angelina Jolie Voight is an American actress, filmmaker, and humanitarian. She plays Thena, an Eternal with the power to generate weapons from cosmic energy, in the MCU's Eternals (2021).",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Angelina_Jolie",
+                "imdb": "https://www.imdb.com/name/nm0001401/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_030"
+            ]
+        },
+        {
+            "id": "star_051",
+            "name": "Richard E. Grant",
+            "character": "Classic Loki",
+            "image": "/assets/images/stars/star_051.jpg",
+            "born": {
+                "date": "1957-05-05",
+                "place": "Mbabane, Swaziland (now Eswatini)"
+            },
+            "nationality": "British-Swazi",
+            "bio": "Richard E. Grant is a British-Swazi actor. He plays Classic Loki, an older variant of Loki, in Season 1 of the Disney+ series Loki.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/richardegrant/",
+                "twitter": "https://twitter.com/RichardEGrant",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Richard_E._Grant",
+                "imdb": "https://www.imdb.com/name/nm0000373/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_026"
+            ]
+        },
+        {
+            "id": "star_052",
+            "name": "Kathryn Hahn",
+            "character": "Agatha Harkness",
+            "image": "/assets/images/stars/star_052.jpg",
+            "born": {
+                "date": "1973-07-23",
+                "place": "Westchester, Illinois, USA"
+            },
+            "nationality": "American",
+            "bio": "Kathryn Hahn is an American actress. She plays Agatha Harkness, a powerful witch who was hiding in Westview, in WandaVision. She reprises the role in the spin-off series Agatha All Along.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/kathrynahahn/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Kathryn_Hahn",
+                "imdb": "https://www.imdb.com/name/nm0355867/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_024",
+                "mcu_050"
+            ]
+        },
+        {
+            "id": "star_053",
+            "name": "Wyatt Russell",
+            "character": "John Walker / U.S. Agent",
+            "image": "/assets/images/stars/star_053.jpg",
+            "born": {
+                "date": "1986-07-10",
+                "place": "Santa Monica, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Wyatt Russell is an American actor. He plays John Walker, the government-appointed replacement Captain America who later becomes the morally ambiguous U.S. Agent, in The Falcon and the Winter Soldier.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/wyattrussell/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Wyatt_Russell",
+                "imdb": "https://www.imdb.com/name/nm3093532/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_025",
+                "mcu_055",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_054",
+            "name": "Xochitl Gomez",
+            "character": "America Chavez",
+            "image": "/assets/images/stars/star_054.jpg",
+            "born": {
+                "date": "2006-04-29",
+                "place": "Los Angeles, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Xochitl Gomez is an American actress. She plays America Chavez, a teenage girl with the power to punch star-shaped portals through the multiverse, in Doctor Strange in the Multiverse of Madness.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/xochitlhgomez/",
+                "twitter": "https://twitter.com/xochitlgomez",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Xochitl_Gomez",
+                "imdb": "https://www.imdb.com/name/nm10288069/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_034"
+            ]
+        },
+        {
+            "id": "star_055",
+            "name": "Tenoch Huerta Mejía",
+            "character": "Namor / Ku'ku'lkán",
+            "image": "/assets/images/stars/star_055.jpg",
+            "born": {
+                "date": "1981-01-29",
+                "place": "Ecatepec, Estado de México, Mexico"
+            },
+            "nationality": "Mexican",
+            "bio": "Tenoch Huerta Mejía is a Mexican actor. He plays Namor, the sub-mariner king of Talokan, in Black Panther: Wakanda Forever.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/tenochhuerta/",
+                "twitter": "https://twitter.com/TenochHuerta",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Tenoch_Huerta",
+                "imdb": "https://www.imdb.com/name/nm4301753/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_040"
+            ]
+        },
+        {
+            "id": "star_056",
+            "name": "Pedro Pascal",
+            "character": "Reed Richards / Mister Fantastic",
+            "image": "/assets/images/stars/star_056.jpg",
+            "born": {
+                "date": "1975-04-02",
+                "place": "Santiago, Chile"
+            },
+            "nationality": "Chilean-American",
+            "bio": "José Pedro Balmaceda Pascal is a Chilean-American actor. He has been cast as Reed Richards / Mister Fantastic, the leader of the Fantastic Four, in the MCU's The Fantastic Four: First Steps (2025) and Avengers: Doomsday (2026).",
+            "social_media": {
+                "instagram": "https://www.instagram.com/pascalispunk/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Pedro_Pascal",
+                "imdb": "https://www.imdb.com/name/nm0050959/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_057",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_057",
+            "name": "Vanessa Kirby",
+            "character": "Sue Storm / Invisible Woman",
+            "image": "/assets/images/stars/star_057.jpg",
+            "born": {
+                "date": "1988-04-18",
+                "place": "London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Vanessa Kirby is a British actress. She has been cast as Sue Storm / The Invisible Woman in the MCU's The Fantastic Four: First Steps (2025) and Avengers: Doomsday (2026).",
+            "social_media": {
+                "instagram": "https://www.instagram.com/vanessa.kirby/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Vanessa_Kirby",
+                "imdb": "https://www.imdb.com/name/nm4972453/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_057",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_058",
+            "name": "Joseph Quinn",
+            "character": "Johnny Storm / Human Torch",
+            "image": "/assets/images/stars/star_058.jpg",
+            "born": {
+                "date": "1993-03-15",
+                "place": "London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Joseph Quinn is a British actor, best known for his acclaimed role as Eddie Munson in Stranger Things. He has been cast as Johnny Storm / The Human Torch in the MCU's The Fantastic Four: First Steps.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/joseph.quinn.actor/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Joseph_Quinn_(actor)",
+                "imdb": "https://www.imdb.com/name/nm7485178/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_057",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_059",
+            "name": "Ebon Moss-Bachrach",
+            "character": "Ben Grimm / The Thing",
+            "image": "/assets/images/stars/star_059.jpg",
+            "born": {
+                "date": "1977-02-19",
+                "place": "Marin County, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Ebon Moss-Bachrach is an American actor. He plays Ben Grimm / The Thing in the MCU's The Fantastic Four: First Steps. He is known for his Emmy-nominated role in The Bear.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/ebonmossbachrach/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Ebon_Moss-Bachrach",
+                "imdb": "https://www.imdb.com/name/nm0608906/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_057",
+                "mcu_059"
+            ]
+        },
+        {
+            "id": "star_060",
+            "name": "Lupita Nyong'o",
+            "character": "Nakia",
+            "image": "/assets/images/stars/star_060.jpg",
+            "born": {
+                "date": "1983-03-01",
+                "place": "Mexico City, Mexico"
+            },
+            "nationality": "Kenyan-Mexican",
+            "bio": "Lupita Amondi Nyong'o is a Kenyan-Mexican actress. She plays Nakia, a Wakandan spy and T'Challa's love interest, in the Black Panther franchise.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/lupitanyongo/",
+                "twitter": "https://twitter.com/Lupita_Nyongo",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Lupita_Nyong%27o",
+                "imdb": "https://www.imdb.com/name/nm4330560/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_018",
+                "mcu_040"
+            ]
+        },
+        {
+            "id": "star_061",
+            "name": "Michael Keaton",
+            "character": "Adrian Toomes / Vulture",
+            "image": "/assets/images/stars/star_061.jpg",
+            "born": {
+                "date": "1951-09-05",
+                "place": "Coraopolis, Pennsylvania, USA"
+            },
+            "nationality": "American",
+            "bio": "Michael John Douglas, known professionally as Michael Keaton, is an American actor. He plays Adrian Toomes / Vulture in Spider-Man: Homecoming, and reprised the role in Morbius and the upcoming Vulture Disney+ series.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Michael_Keaton",
+                "imdb": "https://www.imdb.com/name/nm0000474/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_016"
+            ]
+        },
+        {
+            "id": "star_062",
+            "name": "Jake Gyllenhaal",
+            "character": "Quentin Beck / Mysterio",
+            "image": "/assets/images/stars/star_062.jpg",
+            "born": {
+                "date": "1980-12-19",
+                "place": "Los Angeles, California, USA"
+            },
+            "nationality": "American",
+            "bio": "Jacob Benjamin Gyllenhaal is an American actor. He played Quentin Beck / Mysterio, a seemingly heroic figure revealed to be an elaborate deceiver, in Spider-Man: Far From Home.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/jakegyllenhaal/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Jake_Gyllenhaal",
+                "imdb": "https://www.imdb.com/name/nm0350453/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_023"
+            ]
+        },
+        {
+            "id": "star_063",
+            "name": "Natalie Portman",
+            "character": "Jane Foster / Mighty Thor",
+            "image": "/assets/images/stars/star_063.jpg",
+            "born": {
+                "date": "1981-06-09",
+                "place": "Jerusalem, Israel"
+            },
+            "nationality": "Israeli-American",
+            "bio": "Natalie Hershlag, known professionally as Natalie Portman, is an Israeli-American actress. She plays Jane Foster, Thor's love interest, across the Thor franchise, and becomes the Mighty Thor in Thor: Love and Thunder.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/natalieportman/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Natalie_Portman",
+                "imdb": "https://www.imdb.com/name/nm0000204/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_004",
+                "mcu_008",
+                "mcu_036"
+            ]
+        },
+        {
+            "id": "star_064",
+            "name": "Christian Bale",
+            "character": "Gorr the God Butcher",
+            "image": "/assets/images/stars/star_064.jpg",
+            "born": {
+                "date": "1974-01-30",
+                "place": "Haverfordwest, Pembrokeshire, Wales, UK"
+            },
+            "nationality": "British",
+            "bio": "Christian Charles Philip Bale is a British actor. He played Gorr the God Butcher, a man who swore vengeance on all gods, in Thor: Love and Thunder.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Christian_Bale",
+                "imdb": "https://www.imdb.com/name/nm0000288/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_036"
+            ]
+        },
+        {
+            "id": "star_065",
+            "name": "Will Poulter",
+            "character": "Adam Warlock",
+            "image": "/assets/images/stars/star_065.jpg",
+            "born": {
+                "date": "1993-01-28",
+                "place": "Hammersmith, London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Will Poulter is a British actor. He plays Adam Warlock, a powerful synthetic being created by the Sovereign, in Guardians of the Galaxy Vol. 3.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/will.poulter/",
+                "twitter": "https://twitter.com/WillPoulter",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Will_Poulter",
+                "imdb": "https://www.imdb.com/name/nm2090586/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_043"
+            ]
+        },
+        {
+            "id": "star_066",
+            "name": "Ali Selim",
+            "character": "Director",
+            "image": "/assets/images/stars/star_066.jpg",
+            "born": {
+                "date": "1964-01-01",
+                "place": "USA"
+            },
+            "nationality": "American",
+            "bio": "Ali Selim is an American director known for directing the Secret Invasion Disney+ series.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": null,
+                "imdb": "https://www.imdb.com/name/nm0784328/",
+                "official_site": null
+            },
+            "mcu_appearances": []
+        },
+        {
+            "id": "star_067",
+            "name": "Emilia Clarke",
+            "character": "G'iah",
+            "image": "/assets/images/stars/star_067.jpg",
+            "born": {
+                "date": "1986-10-23",
+                "place": "London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Emilia Isabelle Euphemia Rose Clarke is a British actress, best known for playing Daenerys Targaryen in Game of Thrones. In the MCU, she plays G'iah, a Skrull and daughter of Talos, in the Disney+ series Secret Invasion.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/emilia_clarke/",
+                "twitter": "https://twitter.com/emiliaclarke",
+                "facebook": "https://www.facebook.com/EmiliaClarkeOfficial"
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Emilia_Clarke",
+                "imdb": "https://www.imdb.com/name/nm3592338/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_044"
+            ]
+        },
+        {
+            "id": "star_068",
+            "name": "Ben Kingsley",
+            "character": "Trevor Slattery / Mandarin",
+            "image": "/assets/images/stars/star_068.jpg",
+            "born": {
+                "date": "1943-12-31",
+                "place": "Snainton, Yorkshire, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Sir Ben Kingsley is a British actor. He plays Trevor Slattery, an actor hired to portray the Mandarin in Iron Man 3, and later appeared in Shang-Chi and the Legend of the Ten Rings.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Ben_Kingsley",
+                "imdb": "https://www.imdb.com/name/nm0001429/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_007",
+                "mcu_029"
+            ]
+        },
+        {
+            "id": "star_069",
+            "name": "Wai Ching Ho",
+            "character": "Madame Gao",
+            "image": "/assets/images/stars/star_069.jpg",
+            "born": {
+                "date": "1949-09-23",
+                "place": "Taiwan"
+            },
+            "nationality": "Taiwanese-American",
+            "bio": "Wai Ching Ho is a Taiwanese-American actress. She is known for playing Madame Gao, a powerful crime lord connected to the Hand, in multiple Marvel Netflix series.",
+            "social_media": {
+                "instagram": null,
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Wai_Ching_Ho",
+                "imdb": "https://www.imdb.com/name/nm0387770/",
+                "official_site": null
+            },
+            "mcu_appearances": []
+        },
+        {
+            "id": "star_070",
+            "name": "Charlie Cox",
+            "character": "Matt Murdock / Daredevil",
+            "image": "/assets/images/stars/star_070.jpg",
+            "born": {
+                "date": "1982-12-15",
+                "place": "London, England, UK"
+            },
+            "nationality": "British",
+            "bio": "Charles Thomas Cox is a British actor. He is best known for playing Matt Murdock / Daredevil, a blind lawyer who is also a vigilante superhero. He played the role in the Netflix series and has reprised it in the MCU, appearing in Spider-Man: No Way Home, She-Hulk, and the Disney+ series Daredevil: Born Again.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/charliexcox/",
+                "twitter": "https://twitter.com/charliexcox",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Charlie_Cox",
+                "imdb": "https://www.imdb.com/name/nm1404296/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_032",
+                "mcu_038",
+                "mcu_054"
+            ]
+        },
+        {
+            "id": "star_071",
+            "name": "Vincent D'Onofrio",
+            "character": "Wilson Fisk / Kingpin",
+            "image": "/assets/images/stars/star_071.jpg",
+            "born": {
+                "date": "1959-06-30",
+                "place": "Brooklyn, New York City, New York, USA"
+            },
+            "nationality": "American",
+            "bio": "Vincent Philip D'Onofrio is an American actor and filmmaker. He is known for playing Wilson Fisk / Kingpin, a powerful crime lord, in the Netflix Daredevil series and reprising the role in the MCU's Hawkeye, Echo, and Daredevil: Born Again.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/vincentdonofrio/",
+                "twitter": "https://twitter.com/vincentdonofrio",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Vincent_D%27Onofrio",
+                "imdb": "https://www.imdb.com/name/nm0000352/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_031",
+                "mcu_049",
+                "mcu_054"
+            ]
+        },
+        {
+            "id": "star_072",
+            "name": "Alaqua Cox",
+            "character": "Maya Lopez / Echo",
+            "image": "/assets/images/stars/star_072.jpg",
+            "born": {
+                "date": "1997-01-01",
+                "place": "Menominee Reservation, Wisconsin, USA"
+            },
+            "nationality": "American (Menominee Nation)",
+            "bio": "Alaqua Cox is an American actress and member of the Menominee Nation. She is deaf and wears a prosthetic leg. She plays Maya Lopez / Echo, a deaf and skilled fighter, in Hawkeye and the Disney+ series Echo.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/alaquacox/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Alaqua_Cox",
+                "imdb": "https://www.imdb.com/name/nm12900753/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_031",
+                "mcu_049"
+            ]
+        },
+        {
+            "id": "star_073",
+            "name": "Hudson Thames",
+            "character": "Peter Parker / Spider-Man (voice)",
+            "image": "/assets/images/stars/star_073.jpg",
+            "born": {
+                "date": "1995-04-27",
+                "place": "USA"
+            },
+            "nationality": "American",
+            "bio": "Hudson Thames is an American actor and voice actor. He voices Peter Parker / Spider-Man in the animated Disney+ series Your Friendly Neighborhood Spider-Man (2025), an MCU-set animated series that follows a young Peter Parker during his early days as Spider-Man.",
+            "social_media": {
+                "instagram": "https://www.instagram.com/hudsonthames/",
+                "twitter": null,
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": null,
+                "imdb": "https://www.imdb.com/name/nm6476550/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_052"
+            ]
+        },
+        {
+            "id": "star_074",
+            "name": "Dominique Thorne",
+            "character": "Riri Williams / Ironheart",
+            "image": "/assets/images/stars/star_074.jpg",
+            "born": {
+                "date": "1997-01-04",
+                "place": "Brooklyn, New York City, New York, USA"
+            },
+            "nationality": "American",
+            "bio": "Dominique Thorne is an American actress. She plays Riri Williams / Ironheart, a genius MIT student who engineers her own Iron Man-like suit, in the MCU. She debuted in Black Panther: Wakanda Forever (2022) and stars in the Disney+ series Ironheart (2025).",
+            "social_media": {
+                "instagram": "https://www.instagram.com/dominiquethorne/",
+                "twitter": "https://twitter.com/dominiqueathorne",
+                "facebook": null
+            },
+            "links": {
+                "wikipedia": "https://en.wikipedia.org/wiki/Dominique_Thorne",
+                "imdb": "https://www.imdb.com/name/nm9696438/",
+                "official_site": null
+            },
+            "mcu_appearances": [
+                "mcu_040",
+                "mcu_056"
+            ]
+        }
+    ]
+}
