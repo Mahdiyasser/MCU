@@ -5,6 +5,93 @@
 
 'use strict';
 
+// ─── Image URL Cache ──────────────────────────────────
+// Deduplicates image requests: a URL will not be fetched more than once
+// within a 20-minute window (exact: 1200000 ms).
+// The map is persisted to localStorage so the TTL survives page reloads —
+// without this every load is a cold start and busts cache on every image.
+const IMG_CACHE_TTL    = 20 * 60 * 1000; // 20 minutes in ms
+const IMG_CACHE_LS_KEY = 'mcu_img_cache'; // localStorage key
+let   _imgCacheMap     = new Map();       // url -> { ts, stamped }
+
+// Load persisted cache from localStorage on startup
+(function _loadImgCache() {
+  try {
+    const raw = localStorage.getItem(IMG_CACHE_LS_KEY);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      const now = Date.now();
+      // Hydrate map, dropping already-expired entries so localStorage stays lean
+      for (const [url, entry] of Object.entries(obj)) {
+        if ((now - entry.ts) < IMG_CACHE_TTL) _imgCacheMap.set(url, entry);
+      }
+    }
+  } catch(e) {}
+})();
+
+function _saveImgCache() {
+  try {
+    const obj = {};
+    for (const [url, entry] of _imgCacheMap) obj[url] = entry;
+    localStorage.setItem(IMG_CACHE_LS_KEY, JSON.stringify(obj));
+  } catch(e) {}
+}
+
+function cachedImgUrl(url) {
+  if (!url) return url;
+  const now   = Date.now();
+  const entry = _imgCacheMap.get(url);
+  if (entry && (now - entry.ts) < IMG_CACHE_TTL) {
+    // Still within the 20-minute window — return the exact same stamped URL
+    // so the browser serves it from cache.
+    return entry.stamped;
+  }
+  // First load or TTL expired: stamp it, persist it, return the stamped URL.
+  const stamped = url + (url.includes('?') ? '&' : '?') + '_cb=' + now;
+  _imgCacheMap.set(url, { ts: now, stamped });
+  _saveImgCache();
+  return stamped;
+}
+
+// ─── Cache Bust (full) ────────────────────────────────
+// localStorage key: 'last_cbust', value: timestamp (ms, as string)
+const CBUST_KEY = 'last_cbust';
+
+function recordCacheBust() {
+  try { localStorage.setItem(CBUST_KEY, String(Date.now())); } catch(e) {}
+}
+
+function getLastCacheBust() {
+  try { return parseInt(localStorage.getItem(CBUST_KEY) || '0', 10); } catch(e) { return 0; }
+}
+
+// Full cache bust: clears the in-memory image cache, then hard-reloads.
+// Only called from user gesture (logo triple-click) — never auto-triggered
+// while the user is actively on the page.
+function fullCacheBust() {
+  _imgCacheMap.clear();
+  try { localStorage.removeItem(IMG_CACHE_LS_KEY); } catch(e) {}
+  recordCacheBust();
+  // Hard reload bypasses all browser/service-worker caches
+  window.location.reload(true);
+}
+
+// ─── Logo Triple-Click Handler ────────────────────────
+// Three clicks within a 3-second window triggers a full cache bust.
+let _logoClickTimes = [];
+
+function _handleLogoClick() {
+  const now = Date.now();
+  // Keep only clicks within the last 3 seconds
+  _logoClickTimes = _logoClickTimes.filter(t => now - t < 3000);
+  _logoClickTimes.push(now);
+  if (_logoClickTimes.length >= 3) {
+    _logoClickTimes = [];
+    showToast('<i class="fa-solid fa-bolt"></i> Cache cleared — reloading…', 'gold');
+    setTimeout(fullCacheBust, 500);
+  }
+}
+
 // ─── Constants (hydrated from app.json after load) ───
 let STORAGE_KEY  = 'mcu_universe_v1';   // app.json > meta.storage_key
 let VIEW_PARAM   = 'share';             // app.json > meta.share_param
@@ -126,6 +213,11 @@ function readUrlOnLoad() {
 
   if (tab && ['home','timeline','journey','watchlist','stars'].includes(tab)) {
     switchTabSilent(tab);
+  } else if (!tab) {
+    // No t= in URL — normalise to ?t=home so the URL is consistent whether
+    // the user landed fresh or navigated back to the home tab.
+    params.set('t', 'home');
+    history.replaceState({ tab: 'home' }, '', '?' + params.toString());
   }
 
   if (find) {
@@ -161,6 +253,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
   checkViewMode();
   loadUserState();
+  recomputeBonusXP();
+  saveUserState();
   render();
   initSearch();
   setupEventListeners();
@@ -168,16 +262,64 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Restore URL state
   readUrlOnLoad();
 
-  // Loader out
-  setTimeout(() => {
+  // Preload all images during the loading screen so they're ready when it lifts.
+  // This runs concurrently — the loader waits for it but the user sees the spinner
+  // the whole time, so perceived load time is unchanged.
+  const _preloadDone = preloadAssets();
+
+  // Loader out — wait for preload OR 600ms, whichever is longer
+  const _minDelay = new Promise(r => setTimeout(r, 600));
+  Promise.all([_preloadDone, _minDelay]).then(() => {
     const loader = document.getElementById('loader');
     loader && loader.classList.add('fade-out');
     // Show import panel if triggered by ?import= link
     if (window._pendingImport) {
       openImportPanel(window._pendingImport);
     }
-  }, 600);
+  });
 });
+
+// ─── Asset Preloader ───────────────────────────────────
+// Called during the loading screen. Preloads every MCU entry poster,
+// every star photo, and every avatar image in parallel.
+// Returns a Promise that resolves when all images have settled.
+// Individual failures are silently ignored — no broken-image errors here.
+async function preloadAssets() {
+  const urls = new Set();
+
+  // MCU entry posters
+  if (MCU_DATA?.entries) {
+    for (const e of MCU_DATA.entries) {
+      if (e.image) urls.add(e.image);
+    }
+  }
+
+  // Star photos
+  if (STARS_DATA?.stars) {
+    for (const s of STARS_DATA.stars) {
+      if (s.image) urls.add(s.image);
+    }
+  }
+
+  // Avatar images
+  for (const av of AVATARS) {
+    if (av.file) urls.add(AVATAR_BASE + av.file);
+  }
+
+  // Run each raw URL through cachedImgUrl() — this stamps it with ?_cb=<ts>,
+  // registers it in _imgCacheMap, and persists to localStorage. Subsequent
+  // render calls within the TTL get back the exact same stamped URL so the
+  // browser serves it from cache instead of fetching again.
+  const stampedUrls = [...urls].map(url => cachedImgUrl(url));
+
+  // Kick off all preloads in parallel; allSettled so we never throw
+  await Promise.allSettled(stampedUrls.map(url => new Promise(resolve => {
+    const img = new Image();
+    img.onload  = resolve;
+    img.onerror = resolve;
+    img.src     = url;
+  })));
+}
 
 // ─── Data Loading ──────────────────────────────────────
 async function loadData() {
@@ -315,6 +457,62 @@ function saveUserState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(USER_STATE));
   } catch(e) { console.error('Save failed:', e); }
+}
+
+// ─── RECOMPUTE BONUS XP ───────────────────────────────
+// Recalculates bonus_xp from scratch based on earned_bonuses and
+// current bonus values from app.json. Fixes stale XP on import,
+// handles edited bonus values, and newly added bonuses.
+function recomputeBonusXP() {
+  if (!Array.isArray(USER_STATE.earned_bonuses)) USER_STATE.earned_bonuses = [];
+  let total = 0;
+  for (const key of USER_STATE.earned_bonuses) {
+    if (key.startsWith('achievement:')) {
+      const achId = key.slice('achievement:'.length);
+      const ach = ACHIEVEMENTS.find(a => a.id === achId);
+      if (ach && ach.bonus_xp) total += ach.bonus_xp;
+    } else if (key.startsWith('phase:')) {
+      const phaseId = key.slice('phase:'.length);
+      total += PHASE_BONUSES[phaseId] ?? PHASE_COMPLETION_BONUS;
+    } else if (key.startsWith('saga:')) {
+      const sagaId = key.slice('saga:'.length);
+      total += SAGA_BONUSES[sagaId] ?? SAGA_COMPLETION_BONUS;
+    }
+  }
+  // Also check for newly unlocked achievements not yet in earned_bonuses
+  for (const a of ACHIEVEMENTS) {
+    if (!a.bonus_xp) continue;
+    const bonusKey = `achievement:${a.id}`;
+    if (!USER_STATE.earned_bonuses.includes(bonusKey) && a.req(USER_STATE)) {
+      USER_STATE.earned_bonuses.push(bonusKey);
+      total += a.bonus_xp;
+    }
+  }
+
+  // Also check for completed phases not yet in earned_bonuses
+  const phases = MCU_DATA?.about?.phases ?? [];
+  for (const phase of phases) {
+    const bonusKey   = `phase:${phase.id}`;
+    const phaseBonus = PHASE_BONUSES[phase.id] ?? PHASE_COMPLETION_BONUS;
+    if (!USER_STATE.earned_bonuses.includes(bonusKey) && phaseComplete(USER_STATE, phase.id)) {
+      USER_STATE.earned_bonuses.push(bonusKey);
+      total += phaseBonus;
+    }
+  }
+
+  // Also check for completed sagas not yet in earned_bonuses
+  const sagas = MCU_DATA?.about?.sagas ?? [];
+  for (const saga of sagas) {
+    const bonusKey  = `saga:${saga.id}`;
+    const sagaBonus = SAGA_BONUSES[saga.id] ?? SAGA_COMPLETION_BONUS;
+    const sagaDone  = saga.phases.map(n => `phase_${n}`).every(pid => phaseComplete(USER_STATE, pid));
+    if (!USER_STATE.earned_bonuses.includes(bonusKey) && sagaDone) {
+      USER_STATE.earned_bonuses.push(bonusKey);
+      total += sagaBonus;
+    }
+  }
+
+  USER_STATE.bonus_xp = total;
 }
 
 // ─── Toggle Watch / Wishlist ──────────────────────────
@@ -517,7 +715,7 @@ function buildMiniCard(id) {
 
   return `<div class="mcu-card ${watched?'watched':''} ${wishlisted?'wishlisted':''}" onclick="openDetail('${id}')">
     <div style="position:relative">
-      <img class="mcu-card-poster" src="${e.image}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.style.background='var(--surface3)';this.src=''">
+      <img class="mcu-card-poster" src="${cachedImgUrl(e.image)}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.style.background='var(--surface3)';this.src=''">
       <div class="mcu-card-badges">
         ${watched  ? '<div class="card-badge badge-watched"><i class="fa-solid fa-check"></i></div>' : ''}
         ${wishlisted && !watched ? '<div class="card-badge badge-wishlist"><i class="fa-solid fa-bookmark"></i></div>' : ''}
@@ -580,7 +778,7 @@ function buildFullCard(e) {
   return `<div class="mcu-card-full ${watched?'watched':''} ${wishlisted?'wishlisted':''} ${upcoming?'upcoming':''}"
     data-id="${e.id}" onclick="openDetail('${e.id}')">
     <div class="card-poster-wrap">
-      <img class="mcu-card-poster" src="${e.image}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.style.background='var(--surface3)';this.src=''">
+      <img class="mcu-card-poster" src="${cachedImgUrl(e.image)}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.style.background='var(--surface3)';this.src=''">
       ${watched ? '<div class="card-watched-indicator"><i class="fa-solid fa-check"></i></div>' : ''}
       ${wishlisted && !watched ? '<div class="card-wish-indicator"><i class="fa-solid fa-bookmark"></i></div>' : ''}
       ${upcoming ? '<div class="mcu-card-upcoming-tag">Upcoming</div>' : ''}
@@ -746,7 +944,7 @@ function renderWatchQueue() {
         const wishlisted = USER_STATE.wishlist.includes(e.id);
         return `<div class="queue-entry ${watched?'watched-entry':''}" onclick="openDetail('${e.id}')">
           <span class="queue-num">${idx}</span>
-          <img class="queue-poster" src="${e.image}" alt="" loading="lazy" onerror="this.src=''">
+          <img class="queue-poster" src="${cachedImgUrl(e.image)}" alt="" loading="lazy" onerror="this.src=''">
           <div class="queue-info">
             <div class="queue-title">${escapeHtml(e.title)}</div>
             <div class="queue-meta">${TYPE_LABELS[e.type]||e.type} · ${e.release_date?.split('-')[0]||''}</div>
@@ -812,7 +1010,7 @@ function renderStarsTab() {
 function buildStarCard(s) {
   const appearances = s.mcu_appearances?.length || 0;
   return `<div class="star-card" onclick="openStarDetail('${s.id}')">
-    <img class="star-card-img" src="${s.image}" alt="${escapeHtml(s.name)}" loading="lazy" onerror="this.src=''">
+    <img class="star-card-img" src="${cachedImgUrl(s.image)}" alt="${escapeHtml(s.name)}" loading="lazy" onerror="this.src=''">
     <div class="star-card-body">
       <div class="star-card-name">${escapeHtml(s.name)}</div>
       <div class="star-card-char">${escapeHtml(s.character||'')}</div>
@@ -880,7 +1078,7 @@ function renderSearchResults(q) {
     ...mcuMatches.map(e => {
       const tagClass = TYPE_COLORS[e.type] || 'tag-movie';
       return `<div class="search-item" onclick="openDetail('${e.id}');document.getElementById('global-search').value='';document.getElementById('search-results-drop').classList.add('hidden')">
-        <img class="search-item-img" src="${e.image}" alt="" loading="lazy" onerror="this.src=''">
+        <img class="search-item-img" src="${cachedImgUrl(e.image)}" alt="" loading="lazy" onerror="this.src=''">
         <div class="search-item-info">
           <div class="search-item-title">${escapeHtml(e.title)}</div>
           <div class="search-item-sub">${e.release_date?.split('-')[0]||''}</div>
@@ -890,7 +1088,7 @@ function renderSearchResults(q) {
     }),
     ...starMatches.map(s =>
       `<div class="search-item" onclick="openStarDetail('${s.id}');document.getElementById('global-search').value='';document.getElementById('search-results-drop').classList.add('hidden')">
-        <img class="search-item-img star-thumb" src="${s.image}" alt="" loading="lazy" onerror="this.src=''">
+        <img class="search-item-img star-thumb" src="${cachedImgUrl(s.image)}" alt="" loading="lazy" onerror="this.src=''">
         <div class="search-item-info">
           <div class="search-item-title">${escapeHtml(s.name)}</div>
           <div class="search-item-sub">${escapeHtml(s.character||'')}</div>
@@ -973,7 +1171,7 @@ function _buildDetailContent(id) {
 
   const content = `
     <div class="detail-hero">
-      <img class="detail-poster" src="${e.image}" alt="${escapeHtml(e.title)}" onerror="this.src=''">
+      <img class="detail-poster" src="${cachedImgUrl(e.image)}" alt="${escapeHtml(e.title)}" onerror="this.src=''">
       <div class="detail-hero-info">
         <div class="detail-type-phase">
           <span class="detail-type-tag ${tagClass}">${TYPE_LABELS[e.type]||e.type}</span>
@@ -989,21 +1187,21 @@ function _buildDetailContent(id) {
         </div>
         ${ratingsHtml ? `<div class="detail-rating-row">${ratingsHtml}</div>` : ''}
       </div>
+      ${!upcoming ? `<div class="detail-action-row">
+        <button class="detail-btn watch-toggle ${watched?'active':''}" id="detail-watch-btn" onclick="toggleWatched('${id}',event);updateDetailWatchBtn('${id}')">
+          <i class="fa-solid ${watched?'fa-check':'fa-eye'}"></i> ${watched ? 'Watched' : 'Mark Watched'}
+        </button>
+        <button class="detail-btn wish-toggle ${wishlisted?'active':''}" id="detail-wish-btn" onclick="toggleWishlist('${id}',event);updateDetailWishBtn('${id}')">
+          <i class="fa-solid fa-bookmark"></i> ${wishlisted ? 'Wishlisted' : 'Wishlist'}
+        </button>
+        ${links.trailer ? `<a class="detail-btn trailer-btn" href="${links.trailer}" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>` : ''}
+      </div>` : `<div class="detail-action-row">
+        <button class="detail-btn wish-toggle ${wishlisted?'active':''}" id="detail-wish-btn" onclick="toggleWishlist('${id}',event);updateDetailWishBtn('${id}')">
+          <i class="fa-solid fa-bookmark"></i> ${wishlisted ? 'Wishlisted' : 'Wishlist'}
+        </button>
+        ${links.trailer ? `<a class="detail-btn trailer-btn" href="${links.trailer}" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>` : ''}
+      </div>`}
     </div>
-    ${!upcoming ? `<div class="detail-action-row">
-      <button class="detail-btn watch-toggle ${watched?'active':''}" id="detail-watch-btn" onclick="toggleWatched('${id}',event);updateDetailWatchBtn('${id}')">
-        <i class="fa-solid ${watched?'fa-check':'fa-eye'}"></i> ${watched ? 'Watched' : 'Mark Watched'}
-      </button>
-      <button class="detail-btn wish-toggle ${wishlisted?'active':''}" id="detail-wish-btn" onclick="toggleWishlist('${id}',event);updateDetailWishBtn('${id}')">
-        <i class="fa-solid fa-bookmark"></i> ${wishlisted ? 'Wishlisted' : 'Wishlist'}
-      </button>
-      ${links.trailer ? `<a class="detail-btn trailer-btn" href="${links.trailer}" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>` : ''}
-    </div>` : `<div class="detail-action-row">
-      <button class="detail-btn wish-toggle ${wishlisted?'active':''}" id="detail-wish-btn" onclick="toggleWishlist('${id}',event);updateDetailWishBtn('${id}')">
-        <i class="fa-solid fa-bookmark"></i> ${wishlisted ? 'Wishlisted' : 'Wishlist'}
-      </button>
-      ${links.trailer ? `<a class="detail-btn trailer-btn" href="${links.trailer}" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>` : ''}
-    </div>`}
     <div class="detail-body">
       ${e.synopsis ? `<div>
         <div class="detail-section-title">Synopsis</div>
@@ -1103,14 +1301,14 @@ function _buildStarContent(starId) {
 
   const appsHtml = appearances.map(e =>
     `<div class="star-app-card" onclick="openDetail('${e.id}')">
-      <img class="star-app-poster" src="${e.image}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.src=''">
+      <img class="star-app-poster" src="${cachedImgUrl(e.image)}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.src=''">
       <div class="star-app-title">${escapeHtml(e.title)}</div>
     </div>`
   ).join('');
 
   const content = `
     <div class="star-detail-header">
-      <img class="star-detail-img" src="${s.image}" alt="${escapeHtml(s.name)}" onerror="this.src=''">
+      <img class="star-detail-img" src="${cachedImgUrl(s.image)}" alt="${escapeHtml(s.name)}" onerror="this.src=''">
       <div class="star-detail-info">
         <div class="star-detail-name">${escapeHtml(s.name)}</div>
         <div class="star-detail-char">${escapeHtml(s.character||'')}</div>
@@ -1180,7 +1378,7 @@ function buildAvatarImgHtml(avatarId, size, fallbackName) {
   if (avatarId) {
     const av = AVATARS.find(a => a.id === avatarId);
     if (av) {
-      return `<img src="${AVATAR_BASE}${av.file}" alt="${escapeHtml(av.name)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block;" onerror="this.style.display='none'">`;
+      return `<img src="${cachedImgUrl(AVATAR_BASE + av.file)}" alt="${escapeHtml(av.name)}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;display:block;" onerror="this.style.display='none'">`;
     }
   }
   return fallbackName ? fallbackName[0].toUpperCase() : '?';
@@ -1191,7 +1389,7 @@ function buildAvatarPicker() {
   const items = AVATARS.map(av => {
     const selected = av.id === current ? 'av-item--selected' : '';
     return `<button class="av-item ${selected}" onclick="selectAvatar('${av.id}')" title="${escapeHtml(av.name)}">
-      <img src="${AVATAR_BASE}${av.file}" alt="${escapeHtml(av.name)}" loading="lazy" onerror="this.style.opacity='0.3'">
+      <img src="${cachedImgUrl(AVATAR_BASE + av.file)}" alt="${escapeHtml(av.name)}" loading="lazy" onerror="this.style.opacity='0.3'">
     </button>`;
   }).join('');
   return `<div class="av-picker-wrap">
@@ -1301,7 +1499,7 @@ function updateHeaderAvatar() {
   if (avatar) {
     const av = AVATARS.find(a => a.id === avatar);
     if (av) {
-      el.innerHTML = `<img src="${AVATAR_BASE}${av.file}" alt="${escapeHtml(av.name)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">`;
+      el.innerHTML = `<img src="${cachedImgUrl(AVATAR_BASE + av.file)}" alt="${escapeHtml(av.name)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">`;
       return;
     }
   }
@@ -1425,6 +1623,7 @@ function confirmImport(profileData) {
     bonus_xp:      typeof profileData.bonus_xp === 'number' ? profileData.bonus_xp     : 0,
     earned_bonuses: Array.isArray(profileData.earned_bonuses) ? profileData.earned_bonuses : [],
   };
+  recomputeBonusXP();
   saveUserState();
   updateAllUI();
   closePanel('import-panel');
@@ -1480,6 +1679,10 @@ function switchTabSilent(tab) {
 
 // ─── MISC EVENT LISTENERS ─────────────────────────────
 function setupEventListeners() {
+  // Logo triple-click → full cache bust
+  const logoEl = document.querySelector('.header-logo');
+  if (logoEl) logoEl.addEventListener('click', _handleLogoClick);
+
   // Close panels on Escape
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
