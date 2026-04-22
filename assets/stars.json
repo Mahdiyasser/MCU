@@ -20,8 +20,6 @@
                 "wikipedia": "https://en.wikipedia.org/wiki/Robert_Downey_Jr."
             },
             "mcu_appearances": [
-                "mcu_001",
-                "mcu_002",
                 "mcu_003",
                 "mcu_006",
                 "mcu_007",
@@ -31,7 +29,9 @@
                 "mcu_019",
                 "mcu_022",
                 "mcu_053",
-                "mcu_059"
+                "mcu_059",
+                "mcu_002",
+                "mcu_001"
             ]
         },
         {
@@ -119,14 +119,14 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_004",
                 "mcu_006",
                 "mcu_008",
                 "mcu_011",
                 "mcu_017",
                 "mcu_019",
                 "mcu_022",
-                "mcu_036"
+                "mcu_036",
+                "mcu_004"
             ]
         },
         {
@@ -156,7 +156,8 @@
                 "mcu_017",
                 "mcu_019",
                 "mcu_022",
-                "mcu_038"
+                "mcu_038",
+                "mcu_002"
             ]
         },
         {
@@ -181,12 +182,12 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_004",
                 "mcu_006",
                 "mcu_011",
                 "mcu_013",
                 "mcu_022",
-                "mcu_031"
+                "mcu_031",
+                "mcu_004"
             ]
         },
         {
@@ -211,9 +212,7 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_001",
                 "mcu_003",
-                "mcu_004",
                 "mcu_005",
                 "mcu_006",
                 "mcu_009",
@@ -221,7 +220,9 @@
                 "mcu_021",
                 "mcu_022",
                 "mcu_023",
-                "mcu_044"
+                "mcu_044",
+                "mcu_001",
+                "mcu_004"
             ]
         },
         {
@@ -246,11 +247,11 @@
                 "official_site": "https://goop.com"
             },
             "mcu_appearances": [
-                "mcu_001",
                 "mcu_003",
                 "mcu_007",
                 "mcu_019",
-                "mcu_022"
+                "mcu_022",
+                "mcu_001"
             ]
         },
         {
@@ -630,13 +631,13 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_004",
                 "mcu_006",
                 "mcu_008",
                 "mcu_017",
                 "mcu_022",
                 "mcu_026",
-                "mcu_046"
+                "mcu_046",
+                "mcu_004"
             ]
         },
         {
@@ -691,14 +692,14 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_001",
                 "mcu_003",
                 "mcu_007",
                 "mcu_011",
                 "mcu_013",
                 "mcu_019",
                 "mcu_022",
-                "mcu_024"
+                "mcu_024",
+                "mcu_001"
             ]
         },
         {
@@ -1034,10 +1035,10 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_004",
                 "mcu_008",
                 "mcu_017",
-                "mcu_019"
+                "mcu_019",
+                "mcu_004"
             ]
         },
         {
@@ -1756,9 +1757,9 @@
                 "official_site": null
             },
             "mcu_appearances": [
-                "mcu_004",
                 "mcu_008",
-                "mcu_036"
+                "mcu_036",
+                "mcu_004"
             ]
         },
         {

@@ -286,6 +286,8 @@ function applyUrlState() {
   if (!MCU || !STARS) return;
   const state = readUrlState();
 
+  const validTabs = ["titles","stars","reorder","bulk-reorder","order-edit","mcu","settings","overview","json-editor"];
+
   // Settings / Overview shortcuts
   if (state.settings) {
     switchTabInternal("settings");
@@ -296,18 +298,38 @@ function applyUrlState() {
 
   // Tab-based
   const tab = state.tab || "titles";
+
+  // Clean unknown tab param
+  if (state.tab && !validTabs.includes(state.tab)) {
+    replaceState({ tab: "titles" });
+    switchTabInternal("titles");
+    return;
+  }
+
   switchTabInternal(tab);
 
   if (state.view) {
+    const isStar = state.view.startsWith("star_");
+    const exists = isStar
+      ? STARS.stars.some(s => s.id === state.view)
+      : MCU.entries.some(e => e.id === state.view);
+    if (!exists) { replaceState({ tab }); return; }
     setTimeout(() => {
-      const isStar = state.view.startsWith("star_");
       openDetailViewInternal(state.view, isStar ? "star" : "mcu");
     }, 50);
   } else if (state.edit) {
+    const isNewStar = state.edit === "new-star";
+    const isNew     = state.edit === "new";
+    const isStar    = isNewStar || state.edit.startsWith("star_");
+    if (!isNew && !isNewStar) {
+      const exists = isStar
+        ? STARS.stars.some(s => s.id === state.edit)
+        : MCU.entries.some(e => e.id === state.edit);
+      if (!exists) { replaceState({ tab }); return; }
+    }
     setTimeout(() => {
-      const isStar = state.edit.startsWith("star_");
-      if (isStar) openEditStar(state.edit);
-      else openEditTitle(state.edit);
+      if (isStar) openEditStar(isNewStar ? null : state.edit);
+      else openEditTitle(isNew ? null : state.edit);
     }, 50);
   }
 }
@@ -424,7 +446,16 @@ async function api(action, body = null) {
 // ────────────────────────────────────────────────────────────
 // TAB NAVIGATION
 // ────────────────────────────────────────────────────────────
+function isMobile() {
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
 function switchTab(tab) {
+  // Block JSON Editor on mobile
+  if (tab === "json-editor" && isMobile()) {
+    showJsonEditorMobileBlock();
+    return;
+  }
   // Push URL state based on tab type
   if (tab === "settings") pushState({ settings: true });
   else if (tab === "overview") pushState({ overview: true });
@@ -432,7 +463,36 @@ function switchTab(tab) {
   switchTabInternal(tab);
 }
 
+function showJsonEditorMobileBlock() {
+  const html = `
+  <div class="modal-form" style="text-align:center;padding:2rem 1.5rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <div class="modal-form-title" style="color:#e8b84b; justify-content: center;">JSON Editor Unavailable on Mobile</div>
+    <div class="modal-form-sub" style="margin-top:0.75rem;line-height:1.6;max-width:320px;margin-left:auto;margin-right:auto;">
+      The JSON Editor directly overwrites your data files on disk.
+      Editing raw JSON on a mobile keyboard is extremely error-prone —
+      a single typo or misplaced comma will corrupt the entire file.
+    </div>
+    <div style="margin-top:1.25rem;padding:0.85rem 1rem;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.3);border-radius:8px;font-size:0.85rem;color:#ccc;line-height:1.6;max-width:320px;margin-left:auto;margin-right:auto;">
+      <strong style="color:#e8b84b;">To edit JSON safely:</strong><br>
+      Open the editor on a desktop/laptop, make your changes there,
+      validate the JSON, then save. Do not copy-paste raw JSON on mobile.
+    </div>
+    <div class="modal-actions" style="margin-top:1.5rem;justify-content:center;">
+      <button class="btn-ghost-sm" onclick="closeModal()"><i class="fa-solid fa-xmark"></i> Dismiss</button>
+    </div>
+  </div>`;
+  openModal(html);
+}
+
 function switchTabInternal(tab) {
+  // Block JSON Editor on mobile even if navigated via URL
+  if (tab === "json-editor" && isMobile()) {
+    showJsonEditorMobileBlock();
+    // Fall back to titles tab so the app still has an active tab
+    tab = "titles";
+  }
+
   currentTab = tab;
 
   document
@@ -497,6 +557,7 @@ function renderCurrentTab() {
       renderOverview();
       break;
     case "json-editor":
+      if (isMobile()) { showJsonEditorMobileBlock(); break; }
       renderJsonEditor();
       break;
   }
@@ -1281,6 +1342,8 @@ async function saveTitleFromForm(oldId) {
     await loadAll();
     // Bust image cache for this entry so new uploads show up
     if (image_b64) _imgCache.delete(CFG.IMG_MCU + id + ".jpg");
+    // If the ID changed, update the URL to reflect the new ID before closing
+    if (oldId && id !== oldId) replaceState({ tab: currentTab, edit: id });
     closeModal();
     setSaveStatus("", "All saved");
     toast(`"${title}" saved successfully`, "success");
@@ -1601,6 +1664,8 @@ async function saveStarFromForm(oldId) {
     _SSE.notifyOwnSave();
     if (image_b64) _imgCache.delete(CFG.IMG_STARS + id + ".jpg");
     await loadAll();
+    // If the ID changed, update the URL to reflect the new ID before closing
+    if (oldId && id !== oldId) replaceState({ tab: currentTab, edit: id });
     closeModal();
     setSaveStatus("", "All saved");
     toast(`"${name}" saved successfully`, "success");
@@ -2491,31 +2556,37 @@ function renderSettings() {
   <!-- ── STATS BAR ── -->
   <div class="settings-stats-bar">
     <div class="settings-stat">
+      <i class="fa-solid fa-shield-halved settings-stat-icon txt-red"></i>
       <span class="settings-stat-num txt-red">${mcuCount}</span>
       <span class="settings-stat-label">MCU Titles</span>
     </div>
     <div class="settings-stat-divider"></div>
     <div class="settings-stat">
+      <i class="fa-solid fa-film settings-stat-icon txt-red"></i>
       <span class="settings-stat-num">${movieCount}</span>
       <span class="settings-stat-label">Movies</span>
     </div>
     <div class="settings-stat-divider"></div>
     <div class="settings-stat">
+      <i class="fa-solid fa-tv settings-stat-icon txt-blue"></i>
       <span class="settings-stat-num">${seriesCount}</span>
       <span class="settings-stat-label">Series</span>
     </div>
     <div class="settings-stat-divider"></div>
     <div class="settings-stat">
+      <i class="fa-solid fa-star settings-stat-icon txt-gold"></i>
       <span class="settings-stat-num txt-gold">${starCount}</span>
       <span class="settings-stat-label">Stars</span>
     </div>
     <div class="settings-stat-divider"></div>
     <div class="settings-stat">
+      <i class="fa-solid fa-layer-group settings-stat-icon txt-blue"></i>
       <span class="settings-stat-num txt-blue">${phases.length}</span>
       <span class="settings-stat-label">Phases</span>
     </div>
     <div class="settings-stat-divider"></div>
     <div class="settings-stat">
+      <i class="fa-solid fa-calendar-days settings-stat-icon txt-gold"></i>
       <span class="settings-stat-num" style="font-size:13px;letter-spacing:0">${esc(meta.last_updated || "—")}</span>
       <span class="settings-stat-label">Last Updated</span>
     </div>
@@ -2795,7 +2866,7 @@ function renderSettings() {
       <div class="settings-card-title"><i class="fa-solid fa-images txt-green"></i> Image Archive</div>
       <div class="settings-card-actions">
         <button class="settings-ghost-btn" onclick="rebuildArchive()"><i class="fa-solid fa-rotate"></i> Rebuild</button>
-        <button class="settings-save-btn" onclick="openArchiveViewer()"><i class="fa-solid fa-up-right-from-square"></i> Open Viewer</button>
+        <button class="settings-save-btn" onclick="openArchiveViewer()"><i class="fa-solid fa-up-right-from-square"></i> Viewer</button>
       </div>
     </div>
     <p class="settings-archive-desc">
@@ -2855,8 +2926,8 @@ async function openArchiveViewer() {
     <div class="archive-viewer-header">
       <div class="modal-form-title"><i class="fa-solid fa-images txt-green"></i> Image Archive</div>
       <div class="archive-viewer-tabs">
-        <button class="archive-tab-btn active" id="arc-tab-preview" onclick="switchArchiveTab('preview')"><i class="fa-solid fa-eye"></i> Preview</button>
-        <button class="archive-tab-btn" id="arc-tab-source" onclick="switchArchiveTab('source')"><i class="fa-solid fa-code"></i> Source</button>
+        <button class="archive-tab-btn active" id="arc-tab-preview" onclick="switchArchiveTab('preview')"><i class="fa-solid fa-eye"></i><span class="arc-btn-label"> Preview</span></button>
+        <button class="archive-tab-btn" id="arc-tab-source" onclick="switchArchiveTab('source')"><i class="fa-solid fa-code"></i><span class="arc-btn-label"> Source</span></button>
       </div>
       <div class="archive-viewer-btns">
         <button class="btn-ghost-sm" onclick="rebuildArchiveInViewer()"><i class="fa-solid fa-rotate"></i> Rebuild</button>
@@ -2949,8 +3020,11 @@ function markdownToHtml(md) {
     return `\x00CODE${codeBlocks.length - 1}\x00`;
   });
 
-  // Blockquotes
-  html = html.replace(/^> (.+)$/gm, "<blockquote class=\"arc-bq\">$1</blockquote>");
+  // Blockquotes — merge consecutive > lines into a single <blockquote>
+  html = html.replace(/(^> .+$\n?)+/gm, (block) => {
+    const lines = block.trim().split("\n").map(l => l.replace(/^> /, ""));
+    return `<blockquote class="arc-bq">${lines.join("<br>")}</blockquote>`;
+  });
 
   // Headers
   html = html.replace(/^### (.+)$/gm, "<h3 class=\"arc-h3\">$1</h3>");
@@ -3017,18 +3091,24 @@ async function runHealthCheck() {
     const summaryHtml = `
     <div class="health-summary">
       <div class="health-summary-item ok">
-        <i class="fa-solid fa-circle-check"></i>
-        <span class="health-summary-num">${summary.ok}</span>
+        <div class="health-summary-top">
+          <i class="fa-solid fa-circle-check"></i>
+          <span class="health-summary-num">${summary.ok}</span>
+        </div>
         <span class="health-summary-label">Images OK</span>
       </div>
       <div class="health-summary-item ${summary.missing > 0 ? 'err' : 'ok'}">
-        <i class="fa-solid fa-image-slash"></i>
-        <span class="health-summary-num">${summary.missing}</span>
+        <div class="health-summary-top">
+          <i class="fa-solid fa-image-slash"></i>
+          <span class="health-summary-num">${summary.missing}</span>
+        </div>
         <span class="health-summary-label">Missing</span>
       </div>
       <div class="health-summary-item ${summary.orphan > 0 ? 'warn' : 'ok'}">
-        <i class="fa-solid fa-file-circle-question"></i>
-        <span class="health-summary-num">${summary.orphan}</span>
+        <div class="health-summary-top">
+          <i class="fa-solid fa-file-circle-question"></i>
+          <span class="health-summary-num">${summary.orphan}</span>
+        </div>
         <span class="health-summary-label">Orphaned</span>
       </div>
       <div class="health-summary-breakdown">
@@ -3042,8 +3122,10 @@ async function runHealthCheck() {
       body.innerHTML = summaryHtml + `
       <div class="health-all-good">
         <i class="fa-solid fa-circle-check"></i>
-        <strong>All images accounted for!</strong>
-        <span>Every entry in the database has a matching image file, and no orphaned files were found.</span>
+        <div class="health-all-good-text">
+          <strong>All Images OK</strong>
+          <span>Every entry has a matching image file and no orphaned files were found.</span>
+        </div>
       </div>`;
     } else {
       const rows = issues.map(issue => {
@@ -3772,12 +3854,10 @@ function closeModal(event) {
   document.getElementById("modal-content").innerHTML = "";
   document.querySelector(".modal-box")?.classList.remove("modal-content-wide");
   document.body.style.overflow = "";
-  // Push URL back to tab-only state on explicit close
-  if (!event) {
-    if (currentTab === "settings") pushState({ settings: true });
-    else if (currentTab === "overview") pushState({ overview: true });
-    else pushState({ tab: currentTab });
-  }
+  // Push URL back to tab-only state on any close (X button or backdrop)
+  if (currentTab === "settings") pushState({ settings: true });
+  else if (currentTab === "overview") pushState({ overview: true });
+  else pushState({ tab: currentTab });
 }
 
 // ────────────────────────────────────────────────────────────

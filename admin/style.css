@@ -1870,6 +1870,11 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   color: var(--text-dim);
 }
 
+.settings-stat-icon {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
 .settings-stat-divider {
   width: 1px;
   height: 36px;
@@ -2161,6 +2166,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   max-width: min(1100px, 95vw);
   width: min(1100px, 95vw);
   max-height: 90vh;
+  height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -2176,10 +2182,10 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 }
 
 .archive-viewer {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 0;
 }
 
 .archive-viewer-header {
@@ -2241,32 +2247,24 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   flex: 1;
   min-height: 0;
   margin-top: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 
 .archive-panel {
-  flex: 1;
+  position: absolute;
+  inset: 0;
   overflow-y: auto;
-  min-height: 0;
 }
 
-.archive-preview-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  gap: 10px;
-  color: var(--text-dim);
-  font-family: var(--font-cond);
-  font-size: 14px;
+.archive-panel#arc-panel-source {
+  padding: 0;
+  overflow-y: hidden;
 }
 
 .archive-source-editor {
   width: 100%;
   height: 100%;
-  min-height: 500px;
+  min-height: 100%;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -2278,6 +2276,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   resize: none;
   outline: none;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .archive-source-editor:focus { border-color: var(--blue); }
@@ -3875,7 +3874,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   .bulk-target {
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .bulk-arrows {
@@ -4155,47 +4154,79 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     max-height: none;
   }
 
-  /* The drag list inside these tabs must not cap its own height */
+  /* The drag list inside reorder/order-edit must not cap its own height */
   #reorder-list,
-  #order-array-list,
-  #bulk-source-list,
-  #bulk-target-list {
+  #order-array-list {
     max-height: none;
     overflow: visible;
+  }
+
+  /* Bulk mapper: break out of the fixed-height flex/grid box model
+     so the whole tab scrolls naturally — same as the reorder tab */
+  .bulk-mapper-layout {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    height: auto;
+    overflow: visible;
+  }
+
+  .bulk-source,
+  .bulk-target {
+    height: auto;
+    overflow: visible;
+    flex: none;
+  }
+
+  #bulk-source-list,
+  #bulk-target-list {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    flex: none;
   }
 
   /* ─────────────────────────────────────────────────────────
      2. REORDER TAB — header toolbar organisation
   ───────────────────────────────────────────────────────── */
 
-  /* Stack header controls into a tidy 2-column pill grid */
+  /* ─────────────────────────────────────────────────────────
+     2. REORDER TAB — header toolbar organisation
+  ───────────────────────────────────────────────────────── */
+
   #tab-reorder .reorder-header {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    align-items: start;
     padding: 10px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
   }
 
-  /* Each labelled group fills its grid cell */
+  /* Each labelled group fills its grid cell, label + toggle centred */
   #tab-reorder .reorder-mode-group {
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 4px;
   }
 
-  /* Dataset toggle: full width */
+  /* Dataset toggle: span both columns so it centres properly */
+  #tab-reorder .reorder-mode-group:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Order toggles row: span full width */
   #tab-reorder #reo-order-wrap {
     grid-column: 1 / -1;
   }
 
-  /* Action buttons row: sit side-by-side on one row */
+  /* Action buttons: share one centred full-width row */
   #tab-reorder #reo-auto-sort-btn,
-  #tab-reorder .btn-primary-sm:last-child {
+  #tab-reorder .reorder-header .btn-primary-sm {
+    grid-column: span 1;
     height: 38px;
     padding: 0 12px;
     font-size: 12px;
@@ -4219,7 +4250,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     text-overflow: ellipsis;
   }
 
-  /* Show btn labels inside reorder header (overrides global hide) */
+  /* Show btn labels inside reorder header */
   #tab-reorder .reorder-header .btn-label {
     display: inline !important;
     font-size: 11px;
@@ -4229,11 +4260,14 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
      3. BULK MAPPER TAB — same header treatment
   ───────────────────────────────────────────────────────── */
 
+  /* ─────────────────────────────────────────────────────────
+     3. BULK MAPPER TAB — same header treatment
+  ───────────────────────────────────────────────────────── */
+
   #tab-bulk-reorder .reorder-header {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    align-items: start;
     padding: 10px;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -4244,11 +4278,39 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 4px;
+  }
+
+  /* Dataset toggle: span both columns so it centres properly */
+  #tab-bulk-reorder .reorder-mode-group:first-child {
+    grid-column: 1 / -1;
   }
 
   /* Map Field selector spans full width */
   #tab-bulk-reorder .reorder-mode-group:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+
+  /* All 3 action buttons: span full width, sit in equal thirds */
+  #tab-bulk-reorder .reorder-header .topbar-btn {
+    grid-column: span 1;
+    height: 38px;
+    justify-content: center;
+    width: 100%;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  /* 3 buttons in 2-col grid: last one needs to be centred alone.
+     Put all 3 on their own full-width row as a flex subgrid. */
+  #tab-bulk-reorder .reorder-header .topbar-btn:nth-child(3) {
+    grid-column: 1 / 2;
+  }
+  #tab-bulk-reorder .reorder-header .topbar-btn:nth-child(4) {
+    grid-column: 2 / 3;
+  }
+  #tab-bulk-reorder .reorder-header .topbar-btn:nth-child(5) {
     grid-column: 1 / -1;
   }
 
@@ -4276,24 +4338,11 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     min-width: 0;
   }
 
-  /* Action buttons: each fills a cell */
-  #tab-bulk-reorder .reorder-header .topbar-btn {
-    height: 38px;
-    justify-content: center;
-    width: 100%;
-    padding: 0 10px;
-    font-size: 12px;
-  }
-
-  /* Bulk layout panels: add scroll to each individually */
-  .bulk-source-list {
-    max-height: 260px;
-    overflow-y: auto;
-  }
-
+  /* Bulk layout panels: let the tab scroll naturally (no max-height cap) */
+  .bulk-source-list,
   .bulk-target-list {
-    max-height: 260px;
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
   }
 
   /* ─────────────────────────────────────────────────────────
@@ -4349,6 +4398,75 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     width: 100%;
     padding: 0 10px;
     font-size: 12px;
+  }
+
+  /* Order Arrays list: 2-column grid on mobile */
+  #tab-order-edit .reorder-list.oa-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    overflow-y: auto;
+    align-content: start;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reorder-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-arrow-btns {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    order: 99;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-fast-btn {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-num {
+    width: auto;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-thumb {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 3px;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-title {
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-id {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+
+  #tab-order-edit .reorder-list.oa-list .reo-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+
+  /* top row: num + badge + fast-btn inline */
+  #tab-order-edit .reorder-list.oa-list .reo-num,
+  #tab-order-edit .reorder-list.oa-list .reo-badge,
+  #tab-order-edit .reorder-list.oa-list .reo-fast-btn {
+    display: inline-flex;
   }
 
   /* ─────────────────────────────────────────────────────────
@@ -4430,21 +4548,253 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     gap: 8px;
   }
 
-  /* Platform rows: cleaner stacking */
+  /* Platform rows: redesigned compact hybrid layout
+     Row 1: [ Logo ] [ ID + Name ] [ × ]
+     Row 2:          [ Site URL       ]
+     Row 3:          [ Logo Path      ]
+  */
   #tab-settings .settings-platform-row {
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px 0;
+    display: grid;
+    grid-template-columns: 42px 1fr 32px;
+    grid-template-rows: auto;
+    column-gap: 8px;
+    row-gap: 0;
+    align-items: start;
+    padding: 10px 0;
+    flex-direction: unset;
   }
 
   #tab-settings .platform-row-logo {
-    margin-top: 0;
-    align-self: flex-start;
+    grid-column: 1;
+    grid-row: 1;
+    margin-top: 20px;
+    align-self: start;
+    width: 42px;
+    height: 42px;
   }
 
+  #tab-settings .settings-platform-row > .cast-remove {
+    grid-column: 3;
+    grid-row: 1;
+    margin-top: 20px;
+    align-self: start;
+  }
+
+  #tab-settings .platform-row-fields {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  /* ID + Name side by side in first pair */
+  #tab-settings .platform-field-pair:first-child {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* Site URL and Logo Path each full width */
   #tab-settings .platform-field-pair {
     grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  /* ── 1. CONTENT TYPE BLOCK — full-width items, tight padding ── */
+  #tab-settings #settings-content-types {
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 8px 12px !important;
+  }
+
+  #tab-settings .settings-ct-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #tab-settings .settings-ct-row .form-input[data-ct-value] {
+    width: auto !important;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ── 3. IMAGE HEALTH CHECK — stats redesign ─────────────── */
+
+  /* 3 stats in a row */
+  #tab-settings .health-summary,
+  .health-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    padding: 8px;
+  }
+
+  #tab-settings .health-summary-item,
+  .health-summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-right: 1px solid var(--border);
+  }
+
+  #tab-settings .health-summary-item:last-of-type,
+  .health-summary-item:last-of-type {
+    border-right: none;
+  }
+
+  /* Icon + number on same row */
+  .health-summary-top {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  #tab-settings .health-summary-item i,
+  .health-summary-item i {
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+
+  #tab-settings .health-summary-num,
+  .health-summary-num {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  #tab-settings .health-summary-label,
+  .health-summary-label {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    text-align: center;
+    color: var(--text-dim);
+  }
+
+  /* Breakdown spans full width below the 3 stats */
+  #tab-settings .health-summary-breakdown,
+  .health-summary-breakdown {
+    grid-column: 1 / -1;
+    padding: 6px 4px 0;
+    border-top: 1px solid var(--border);
+    padding-left: 4px;
+    min-width: 0;
+  }
+
+  /* All-good banner: icon left, text block right */
+  #tab-settings .health-all-good,
+  .health-all-good {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  #tab-settings .health-all-good i,
+  .health-all-good i {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .health-all-good-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .health-all-good strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 0;
+  }
+
+  .health-all-good span {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  /* ── 4. IMAGE ARCHIVE BLOCK ──────────────────────────────── */
+
+  /* "Viewer" + "Rebuild" must sit side by side */
+  #tab-settings .settings-archive-card .settings-card-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  /* Archive viewer modal: two-row layout on mobile
+     Row 1: [icon title ............] [Preview] [Source]
+     Row 2: [Rebuild ........] [Save ........] (full width, centered)
+  */
+  .archive-viewer-header {
+    flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
+  }
+
+  /* Title takes up available space in row 1 */
+  .archive-viewer-header .modal-form-title {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+  }
+
+  /* Tabs stay on row 1 next to title */
+  .archive-viewer-tabs {
+    flex-shrink: 0;
+  }
+
+  /* Action buttons drop to row 2, full width, centered */
+  .archive-viewer-btns {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .archive-viewer-btns .btn-ghost-sm,
+  .archive-viewer-btns .btn-primary-sm {
+    flex: 1;
+    max-width: 160px;
+    justify-content: center;
+  }
+
+  /* Preview + Source: keep text labels (no icon-only needed now) */
+  .archive-tab-btn .arc-btn-label {
+    display: inline;
+  }
+
+  .archive-tab-btn {
+    padding: 6px 10px;
+  }
+
+  /* Fix source viewer double-scroll: position-based containment */
+  .archive-viewer-body {
+    height: calc(85vh - 130px);
+    position: relative;
+  }
+
+  .archive-panel {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    max-height: none;
+    display: block;
+  }
+
+  .archive-source-editor {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+    resize: none;
   }
 
   /* Saga rows: vertical stack */
@@ -4495,6 +4845,70 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     overflow-y: auto;
   }
 
+  /* MCU tab card header: tidy button wrapping */
+  #mcu-grid .settings-card-header {
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  #mcu-grid .settings-card-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+    max-width: 55%;
+  }
+
+  #mcu-grid .settings-save-btn,
+  #mcu-grid .settings-ghost-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  /* MCU stats bar: overview-style icon cards */
+  #mcu-grid .settings-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0;
+    overflow-x: unset;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+
+  #mcu-grid .settings-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 8px;
+    align-items: center;
+    text-align: center;
+    min-width: 0;
+    gap: 6px;
+    flex-direction: column;
+    display: flex;
+  }
+
+  #mcu-grid .settings-stat-num {
+    font-family: var(--font-display);
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  #mcu-grid .settings-stat-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-align: center;
+    color: var(--text-dim);
+  }
+
+  #mcu-grid .settings-stat-divider {
+    display: none;
+  }
+
   /* Phase rows in MCU tab: single-column stack */
   #mcu-grid .settings-phase-row {
     grid-template-columns: 28px 1fr;
@@ -4523,16 +4937,20 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     gap: 8px;
   }
 
-  /* Saga rows in MCU tab */
+  /* Saga rows in MCU tab — match phase row look */
   #mcu-grid .settings-saga-row {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 28px 1fr 30px;
     gap: 8px;
-    padding: 12px;
-    background: var(--surface-2);
+    padding: 10px 12px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     margin-bottom: 6px;
-    border-bottom: 1px solid var(--border);
+  }
+
+  #mcu-grid .settings-saga-row .phase-row-fields {
+    grid-column: 2;
   }
 
   #mcu-grid .settings-saga-row .phase-field-pair {
@@ -4540,61 +4958,26 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   }
 
   #mcu-grid .settings-saga-row .cast-remove {
-    align-self: flex-end;
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    width: 26px;
   }
 
-  /* MCU tab card header: tidy button wrapping */
-  #mcu-grid .settings-card-header {
-    align-items: flex-start;
-    flex-wrap: nowrap;
-    gap: 10px;
-  }
-
-  #mcu-grid .settings-card-actions {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 6px;
-    flex-shrink: 0;
-    max-width: 55%;
-  }
-
-  #mcu-grid .settings-save-btn,
-  #mcu-grid .settings-ghost-btn {
-    padding: 6px 10px;
-    font-size: 11px;
-    white-space: nowrap;
-  }
-
-  /* MCU stats bar: same 2-column grid as settings */
-  #mcu-grid .settings-stats-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    padding: 8px;
-    overflow-x: unset;
-  }
-
-  #mcu-grid .settings-stat {
-    padding: 10px 8px;
-    align-items: center;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    min-width: 0;
-  }
-
-  #mcu-grid .settings-stat-divider {
-    display: none;
-  }
-
-  /* Watch-order-type rows in MCU tab */
+  /* Watch-order-type rows in MCU tab — match phase row look */
   #mcu-grid .settings-wot-row {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 28px 1fr 30px;
     gap: 8px;
-    padding: 12px;
-    background: var(--surface-2);
+    padding: 10px 12px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     margin-bottom: 6px;
+  }
+
+  #mcu-grid .settings-wot-row .phase-row-fields {
+    grid-column: 2;
   }
 
   #mcu-grid .settings-wot-row .phase-field-pair {
@@ -4602,7 +4985,10 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
   }
 
   #mcu-grid .settings-wot-row .cast-remove {
-    align-self: flex-end;
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    width: 26px;
   }
 
 } /* end @media (max-width: 680px) */

@@ -1089,7 +1089,7 @@ input, textarea { font-family: inherit; }
 }
 .star-card:hover { transform: translateY(-3px); border-color: var(--border2); }
 .star-card-img {
-  width: 100%; aspect-ratio: 1/1;
+  width: 100%; aspect-ratio: 2/3;
   object-fit: cover; object-position: top;
   background: var(--surface3);
   display: block;
@@ -1612,8 +1612,8 @@ input, textarea { font-family: inherit; }
   flex-shrink: 0; width: 70px; text-align: center; cursor: pointer;
 }
 .cast-img {
-  width: 60px; height: 60px;
-  border-radius: 50%;
+  width: 60px; height: 80px;
+  border-radius: 6px;
   object-fit: cover; object-position: top;
   background: var(--surface3);
   border: 2px solid var(--border);
@@ -1668,8 +1668,8 @@ input, textarea { font-family: inherit; }
   background: var(--surface);
 }
 .star-detail-img {
-  width: 80px; height: 80px;
-  border-radius: 50%;
+  width: 70px; height: 100px;
+  border-radius: 8px;
   object-fit: cover; object-position: top;
   background: var(--surface3);
   border: 3px solid var(--border2);
@@ -1682,8 +1682,8 @@ input, textarea { font-family: inherit; }
     background: linear-gradient(135deg, var(--surface) 0%, var(--bg2) 100%);
   }
   .star-detail-img {
-    width: 110px; height: 110px;
-    border-radius: 12px;
+    width: 90px; height: 130px;
+    border-radius: 10px;
     border-width: 2px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
   }
