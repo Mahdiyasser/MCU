@@ -211,7 +211,7 @@ function readUrlOnLoad() {
   const find   = params.get('find');
   const dl     = params.get('dl');
 
-  if (tab && ['home','timeline','journey','watchlist','stars'].includes(tab)) {
+  if (tab && ['home','timeline','journey','wishlist','stars'].includes(tab)) {
     switchTabSilent(tab);
   } else if (!tab) {
     // No t= in URL — normalise to ?t=home so the URL is consistent whether
@@ -720,7 +720,7 @@ function buildMiniCard(id) {
         ${watched  ? '<div class="card-badge badge-watched"><i class="fa-solid fa-check"></i></div>' : ''}
         ${wishlisted && !watched ? '<div class="card-badge badge-wishlist"><i class="fa-solid fa-bookmark"></i></div>' : ''}
       </div>
-      ${upcoming ? '<div class="mcu-card-upcoming-tag">Soon</div>' : ''}
+      ${upcoming ? '<div class="mcu-card-upcoming-tag">Upcoming</div>' : ''}
     </div>
     <div class="mcu-card-body">
       <div class="mcu-card-title">${escapeHtml(e.title)}</div>
@@ -1707,7 +1707,7 @@ function setupEventListeners() {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('t');
     const id  = params.get('id');
-    if (tab && ['home','timeline','journey','watchlist','stars'].includes(tab)) switchTabSilent(tab);
+    if (tab && ['home','timeline','journey','wishlist','stars'].includes(tab)) switchTabSilent(tab);
     if (id) {
       if (id === 'profile') openAccountPanelSilent();
       else if (id === 'share') openSharePanelSilent();

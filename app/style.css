@@ -568,6 +568,12 @@ input, textarea { font-family: inherit; }
   border-radius: 4px;
   text-transform: uppercase;
 }
+/* In wishlist tab, move the upcoming tag to bottom-center so it doesn't overlap the wishlist icon */
+#wishlist-grid .mcu-card-upcoming-tag {
+  top: auto; right: auto;
+  bottom: 8px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
+}
 
 /* ============================================================
    ABOUT FOOTER CARD
@@ -1809,11 +1815,11 @@ input, textarea { font-family: inherit; }
   .stat-num { font-size: 28px; }
   .stat-label { font-size: 9px; }
   .av-picker-grid {max-height: 230px !important}
-  .timeline-controls {align-items: center;}
+  .timeline-controls {align-items: center; flex-direction: column !important;}
 }
 @media (max-width: 480px) {
   .av-picker-grid {max-height: 230px !important}
-  .timeline-controls {align-items: center;}
+  .timeline-controls {align-items: center; flex-direction: column !important;}
 }
 @media (min-width: 768px) {
   .phase-entries-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
