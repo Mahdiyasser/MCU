@@ -7,12 +7,11 @@
 
 // ─── Image URL Cache ──────────────────────────────────
 // Deduplicates image requests: a URL will not be fetched more than once
-// within a 20-minute window (exact: 1200000 ms).
-// The map is persisted to localStorage so the TTL survives page reloads —
-// without this every load is a cold start and busts cache on every image.
-const IMG_CACHE_TTL    = 20 * 60 * 1000; // 20 minutes in ms
-const IMG_CACHE_LS_KEY = 'mcu_img_cache'; // localStorage key
-let   _imgCacheMap     = new Map();       // url -> { ts, stamped }
+// within a configurable window. Both the TTL and the localStorage key are
+// driven by app.json > cache — safe defaults used until loadData() hydrates them.
+let IMG_CACHE_TTL    = 20 * 60 * 1000; // overridden by app.json storage.img_cache_ttl_minutes
+let IMG_CACHE_LS_KEY = 'mcu_img_cache'; // overridden by app.json storage.img_cache_key
+let _imgCacheMap     = new Map();       // url -> { ts, stamped }
 
 // Load persisted cache from localStorage on startup
 (function _loadImgCache() {
@@ -54,8 +53,8 @@ function cachedImgUrl(url) {
 }
 
 // ─── Cache Bust (full) ────────────────────────────────
-// localStorage key: 'last_cbust', value: timestamp (ms, as string)
-const CBUST_KEY = 'last_cbust';
+// localStorage key driven by app.json > cache.cbust_ls_key
+let CBUST_KEY = 'last_cbust';
 
 function recordCacheBust() {
   try { localStorage.setItem(CBUST_KEY, String(Date.now())); } catch(e) {}
@@ -77,43 +76,76 @@ function fullCacheBust() {
 }
 
 // ─── Logo Triple-Click Handler ────────────────────────
-// Three clicks within a 3-second window triggers a full cache bust.
+// Clicks required, window, and bust delay are all driven by app.json > logo_click
+let _logoClickRequired = 3;    // app.json > behaviour.logo_click.clicks_required
+let _logoClickWindow   = 3000; // app.json > behaviour.logo_click.window_ms
+let _logoBustDelay     = 500;  // app.json > behaviour.logo_click.bust_delay_ms
 let _logoClickTimes = [];
 
 function _handleLogoClick() {
   const now = Date.now();
-  // Keep only clicks within the last 3 seconds
-  _logoClickTimes = _logoClickTimes.filter(t => now - t < 3000);
+  _logoClickTimes = _logoClickTimes.filter(t => now - t < _logoClickWindow);
   _logoClickTimes.push(now);
-  if (_logoClickTimes.length >= 3) {
+  if (_logoClickTimes.length >= _logoClickRequired) {
     _logoClickTimes = [];
-    showToast('<i class="fa-solid fa-bolt"></i> Cache cleared — reloading…', 'gold');
-    setTimeout(fullCacheBust, 500);
+    showToast(t('toast_cache_bust'), 'gold');
+    setTimeout(fullCacheBust, _logoBustDelay);
   }
 }
 
 // ─── Constants (hydrated from app.json after load) ───
-let STORAGE_KEY  = 'mcu_universe_v1';   // app.json > meta.storage_key
-let VIEW_PARAM   = 'share';             // app.json > meta.share_param
-const IMPORT_PARAM = 'import';
-let BASE_URL     = 'https://mcu.mahdiyasser.site/app/'; // app.json > meta.base_url
-let XP_PER_WATCHED = 50;               // app.json > xp.xp_per_watched
-let PHASE_COMPLETION_BONUS  = 200;     // app.json > xp.phase_completion_bonus
-let SAGA_COMPLETION_BONUS   = 500;     // app.json > xp.saga_completion_bonus
-let ACHIEVEMENT_BONUS       = 100;     // app.json > xp.achievement_bonus
-let PHASE_BONUSES           = {};      // app.json > phase_bonuses
-let SAGA_BONUSES            = {};      // app.json > saga_bonuses
+let STORAGE_KEY  = 'mcu_universe_v1';   // app.json > storage.key
+let VIEW_PARAM   = 'share';             // app.json > url_params.share
+let IMPORT_PARAM = 'import';            // app.json > url_params.import
+let BASE_URL     = 'https://mcu.mahdiyasser.site/app/'; // app.json > base_url
+// Timing constants — all driven by app.json > timings
+let TOAST_DURATION_MS    = 2200; // app.json > behaviour.toast_duration_ms
+let TOAST_FADE_MS        = 300;  // app.json > behaviour.toast_fade_ms
+let BONUS_CHECK_DELAY_MS = 400;  // app.json > behaviour.bonus_check_delay_ms
+let XP_BAR_RERENDER_MS   = 900;  // app.json > behaviour.xp_bar_rerender_ms
+let XP_BAR_ANIMATE_MS    = 300;  // app.json > behaviour.xp_bar_animate_ms
+let SEARCH_DEBOUNCE_MS   = 200;  // app.json > behaviour.search_debounce_ms
+let TAB_SCROLL_DELAY_MS  = 200;  // app.json > behaviour.tab_scroll_delay_ms
+let LOADER_MIN_DELAY_MS  = 600;  // app.json > behaviour.loader_min_delay_ms
+let XP_PER_WATCHED = 50;               // app.json > progression.xp_per_watched
+let PHASE_COMPLETION_BONUS  = 200;     // app.json > progression.phase_completion_bonus
+let SAGA_COMPLETION_BONUS   = 500;     // app.json > progression.saga_completion_bonus
+let ACHIEVEMENT_BONUS       = 100;     // app.json > progression.achievement_bonus
+let PHASE_BONUSES           = {};      // app.json > progression.phase_bonuses
+let SAGA_BONUSES            = {};      // app.json > progression.saga_bonuses
 let ACHIEVEMENT_BONUS_MAP   = {};      // built from app.json achievements[].bonus_xp
 
 // XP / Rank system — loaded from app.json
-let RANKS         = [];
-let ACHIEVEMENTS  = [];
-let PHASE_COLORS  = {};
-let TYPE_COLORS   = {};
-let TYPE_LABELS   = {};
-let APP_CONFIG    = null; // full app.json
-let AVATARS       = [];
-let AVATAR_BASE   = '/assets/app/avatars/';
+let RANKS            = [];
+let ACHIEVEMENTS     = [];
+let PHASE_COLORS     = {};
+let TYPE_COLORS      = {};
+let TYPE_LABELS      = {};
+let STATUSES         = {};  // app.json > statuses
+let TIMELINE_FILTERS = [];  // app.json > timeline_filters
+let APP_CONFIG       = null; // full app.json
+let AVATARS          = [];
+let AVATAR_BASE      = '/assets/app/avatars/';
+let TABS             = [];  // app.json > ui.tabs
+let PANELS           = ['detail-panel','star-panel','account-panel','share-panel','import-panel']; // app.json > ui.panels
+let LOGO_PATH        = '/assets/app/logo.png'; // app.json > app.logo
+let DEFAULT_USER_STATE = { name: '', watched: [], wishlist: [], avatar: null, bonus_xp: 0, earned_bonuses: [] }; // app.json > profile.default_state
+let HERO_CONFIG      = {};  // app.json > ui.hero
+let AUTHOR_CONFIG    = {};  // app.json > author
+let UI_TEXT          = {};  // app.json > ui_text
+
+// ─── UI Text helper ───────────────────────────────────
+// Returns a ui_text string by key, with optional {placeholder} substitution.
+// Falls back to the key itself if not found so nothing breaks during dev.
+function t(key, vars) {
+  let str = UI_TEXT[key] || key;
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      str = str.replaceAll('{' + k + '}', v);
+    }
+  }
+  return str;
+}
 
 // Converts an app.json achievement req object into a live function
 function buildAchievementReq(req) {
@@ -136,8 +168,9 @@ function buildAchievementReq(req) {
 }
 
 // ─── Global State ─────────────────────────────────────
-let MCU_DATA    = null; // from data.json + mcu.json
-let STARS_DATA  = null; // from stars.json
+let MCU_DATA             = null; // from data.json + mcu.json
+let STARS_DATA           = null; // from stars.json
+let STREAMING_PLATFORMS  = {};   // keyed by platform_id — hydrated from data.json > streaming_platforms
 let USER_STATE  = null; // { name, watched[], wishlist[] }
 let IS_VIEW_MODE = false;
 let VIEW_STATE   = null;
@@ -211,7 +244,7 @@ function readUrlOnLoad() {
   const find   = params.get('find');
   const dl     = params.get('dl');
 
-  if (tab && ['home','timeline','journey','wishlist','stars'].includes(tab)) {
+  if (tab && (TABS.length ? TABS.map(t => t.id) : ['home','timeline','journey','wishlist','stars']).includes(tab)) {
     switchTabSilent(tab);
   } else if (!tab) {
     // No t= in URL — normalise to ?t=home so the URL is consistent whether
@@ -268,7 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const _preloadDone = preloadAssets();
 
   // Loader out — wait for preload OR 600ms, whichever is longer
-  const _minDelay = new Promise(r => setTimeout(r, 600));
+  const _minDelay = new Promise(r => setTimeout(r, LOADER_MIN_DELAY_MS));
   Promise.all([_preloadDone, _minDelay]).then(() => {
     const loader = document.getElementById('loader');
     loader && loader.classList.add('fade-out');
@@ -324,38 +357,72 @@ async function preloadAssets() {
 // ─── Data Loading ──────────────────────────────────────
 async function loadData() {
   try {
-    const [mcuRes, starsRes, dataRes, appRes] = await Promise.all([
-      fetch('/assets/mcu.json'),
-      fetch('/assets/stars.json'),
-      fetch('/assets/data.json'),
-      fetch('/assets/app/app.json'),
+    const appRes = await fetch('/assets/app/app.json');
+    const app    = await appRes.json();
+
+    // ── app.app ──────────────────────────────────────────
+    const src = app.app?.data_sources || { mcu: '/assets/mcu.json', stars: '/assets/stars.json', data: '/assets/data.json' };
+    if (app.app?.logo) LOGO_PATH = app.app.logo;
+
+    const [mcuRes, starsRes, dataRes] = await Promise.all([
+      fetch(src.mcu),
+      fetch(src.stars),
+      fetch(src.data),
     ]);
     const mcu   = await mcuRes.json();
     const stars = await starsRes.json();
     const data  = await dataRes.json();
-    const app   = await appRes.json();
 
     MCU_DATA   = { ...data, ...mcu };
     STARS_DATA = stars;
     APP_CONFIG = app;
 
-    // Hydrate top-level constants from app.json meta
-    if (app.meta?.storage_key)         STORAGE_KEY           = app.meta.storage_key;
-    if (app.meta?.share_param)         VIEW_PARAM            = app.meta.share_param;
-    if (app.meta?.import_param)        IMPORT_PARAM          = app.meta.import_param;
-    if (app.meta?.base_url)            BASE_URL              = app.meta.base_url;
-    if (app.xp?.xp_per_watched)        XP_PER_WATCHED        = app.xp.xp_per_watched;
-    if (app.xp?.phase_completion_bonus) PHASE_COMPLETION_BONUS = app.xp.phase_completion_bonus;
-    if (app.xp?.saga_completion_bonus)  SAGA_COMPLETION_BONUS  = app.xp.saga_completion_bonus;
-    if (app.xp?.achievement_bonus)      ACHIEVEMENT_BONUS      = app.xp.achievement_bonus;
-    if (app.phase_bonuses)              PHASE_BONUSES          = app.phase_bonuses;
-    if (app.saga_bonuses)               SAGA_BONUSES           = app.saga_bonuses;
+    // Build streaming platform lookup from data.json > streaming_platforms
+    if (Array.isArray(data.streaming_platforms)) {
+      data.streaming_platforms.forEach(p => { STREAMING_PLATFORMS[p.id] = p; });
+    }
 
-    // Hydrate RANKS from app.json
-    RANKS = app.ranks.map(r => ({ name: r.name, min: r.min_xp, level: r.level }));
+    // ── app.storage ──────────────────────────────────────
+    if (app.storage?.key)                  STORAGE_KEY      = app.storage.key;
+    if (app.storage?.img_cache_key)        IMG_CACHE_LS_KEY = app.storage.img_cache_key;
+    if (app.storage?.img_cache_ttl_minutes) IMG_CACHE_TTL   = app.storage.img_cache_ttl_minutes * 60 * 1000;
+    if (app.storage?.cbust_key)            CBUST_KEY        = app.storage.cbust_key;
 
-    // Hydrate ACHIEVEMENTS from app.json (build live req functions from declarative config)
-    ACHIEVEMENTS = app.achievements.map(a => ({
+    // ── app.url_params ───────────────────────────────────
+    if (app.url_params?.share)  VIEW_PARAM   = app.url_params.share;
+    if (app.url_params?.import) IMPORT_PARAM = app.url_params.import;
+
+    // ── app.base_url ─────────────────────────────────────
+    if (app.base_url) BASE_URL = app.base_url;
+
+    // ── app.behaviour ────────────────────────────────────
+    const beh = app.behaviour || {};
+    if (beh.loader_min_delay_ms)  LOADER_MIN_DELAY_MS  = beh.loader_min_delay_ms;
+    if (beh.toast_duration_ms)    TOAST_DURATION_MS    = beh.toast_duration_ms;
+    if (beh.toast_fade_ms)        TOAST_FADE_MS        = beh.toast_fade_ms;
+    if (beh.bonus_check_delay_ms) BONUS_CHECK_DELAY_MS = beh.bonus_check_delay_ms;
+    if (beh.xp_bar_rerender_ms)   XP_BAR_RERENDER_MS   = beh.xp_bar_rerender_ms;
+    if (beh.xp_bar_animate_ms)    XP_BAR_ANIMATE_MS    = beh.xp_bar_animate_ms;
+    if (beh.search_debounce_ms)   SEARCH_DEBOUNCE_MS   = beh.search_debounce_ms;
+    if (beh.tab_scroll_delay_ms)  TAB_SCROLL_DELAY_MS  = beh.tab_scroll_delay_ms;
+    if (beh.logo_click?.clicks_required) _logoClickRequired = beh.logo_click.clicks_required;
+    if (beh.logo_click?.window_ms)       _logoClickWindow   = beh.logo_click.window_ms;
+    if (beh.logo_click?.bust_delay_ms)   _logoBustDelay     = beh.logo_click.bust_delay_ms;
+    // Expose to inline onclick handlers in HTML strings
+    window._TAB_SCROLL_DELAY = TAB_SCROLL_DELAY_MS;
+
+    // ── app.progression ──────────────────────────────────
+    const prog = app.progression || {};
+    if (prog.xp_per_watched)         XP_PER_WATCHED        = prog.xp_per_watched;
+    if (prog.phase_completion_bonus) PHASE_COMPLETION_BONUS = prog.phase_completion_bonus;
+    if (prog.saga_completion_bonus)  SAGA_COMPLETION_BONUS  = prog.saga_completion_bonus;
+    if (prog.achievement_bonus)      ACHIEVEMENT_BONUS      = prog.achievement_bonus;
+    if (prog.phase_bonuses)          PHASE_BONUSES          = prog.phase_bonuses;
+    if (prog.saga_bonuses)           SAGA_BONUSES           = prog.saga_bonuses;
+
+    RANKS = (prog.ranks || []).map(r => ({ name: r.name, min: r.min_xp, level: r.level }));
+
+    ACHIEVEMENTS = (prog.achievements || []).map(a => ({
       id:       a.id,
       icon:     `<i class="${a.icon_fa}"></i>`,
       name:     a.name,
@@ -364,19 +431,37 @@ async function loadData() {
       req:      buildAchievementReq(a.req),
     }));
 
-    // Build achievement bonus lookup: id -> bonus_xp
     ACHIEVEMENT_BONUS_MAP = Object.fromEntries(
-      app.achievements.filter(a => a.bonus_xp).map(a => [a.id, a.bonus_xp])
+      (prog.achievements || []).filter(a => a.bonus_xp).map(a => [a.id, a.bonus_xp])
     );
 
-    // Hydrate phase & type maps
-    PHASE_COLORS = app.phase_colors || {};
-    TYPE_COLORS  = Object.fromEntries(Object.entries(app.type_ui).map(([k,v]) => [k, v.css_class]));
-    TYPE_LABELS  = Object.fromEntries(Object.entries(app.type_ui).map(([k,v]) => [k, v.label]));
+    // ── app.ui ───────────────────────────────────────────
+    const ui = app.ui || {};
+    PHASE_COLORS     = ui.phase_colors || {};
+    TYPE_COLORS      = Object.fromEntries(Object.entries(ui.content_types || {}).map(([k,v]) => [k, v.css_class]));
+    TYPE_LABELS      = Object.fromEntries(Object.entries(ui.content_types || {}).map(([k,v]) => [k, v.label]));
+    STATUSES         = ui.statuses || {};
+    TIMELINE_FILTERS = ui.timeline_filters || [
+      { value: 'all',    label: 'All' },
+      { value: 'movie',  label: 'Movies' },
+      { value: 'series', label: 'Series' },
+      { value: 'special_presentation', label: 'Specials' },
+    ];
+    if (ui.tabs)   TABS   = ui.tabs;
+    if (ui.panels) PANELS = ui.panels;
+    if (ui.hero)   HERO_CONFIG = ui.hero;
 
-    // Hydrate avatars
-    AVATARS     = app.avatars || [];
-    AVATAR_BASE = app.avatar_base_path || '/assets/app/avatars/';
+    // ── app.profile ──────────────────────────────────────
+    const prof = app.profile || {};
+    if (prof.default_state)       DEFAULT_USER_STATE = prof.default_state;
+    if (prof.avatars?.items)      AVATARS            = prof.avatars.items;
+    if (prof.avatars?.base_path)  AVATAR_BASE        = prof.avatars.base_path;
+
+    // ── app.author ───────────────────────────────────────
+    if (app.author) AUTHOR_CONFIG = app.author;
+
+    // ── app.ui_text ──────────────────────────────────────
+    if (app.ui_text) UI_TEXT = app.ui_text;
 
   } catch (e) {
     console.error('Failed to load data files:', e);
@@ -388,6 +473,8 @@ async function loadData() {
     PHASE_COLORS = {};
     TYPE_COLORS  = {};
     TYPE_LABELS  = {};
+    STATUSES     = {};
+    TIMELINE_FILTERS = [];
   }
 }
 
@@ -439,10 +526,10 @@ function loadUserState() {
     if (raw) {
       USER_STATE = JSON.parse(raw);
     } else {
-      USER_STATE = { name: '', watched: [], wishlist: [], avatar: null, bonus_xp: 0, earned_bonuses: [] };
+      USER_STATE = { ...DEFAULT_USER_STATE };
     }
   } catch(e) {
-    USER_STATE = { name: '', watched: [], wishlist: [], bonus_xp: 0, earned_bonuses: [] };
+    USER_STATE = { ...DEFAULT_USER_STATE };
   }
   // Ensure fields exist (backwards-compat with old saved states)
   if (!Array.isArray(USER_STATE.watched))       USER_STATE.watched       = [];
@@ -517,17 +604,17 @@ function recomputeBonusXP() {
 
 // ─── Toggle Watch / Wishlist ──────────────────────────
 function toggleWatched(id, evt) {
-  if (IS_VIEW_MODE) { showToast('View-only mode', 'blue'); return; }
+  if (IS_VIEW_MODE) { showToast(t('toast_view_only'), 'blue'); return; }
   if (evt) evt.stopPropagation();
   const i = USER_STATE.watched.indexOf(id);
   if (i === -1) {
     USER_STATE.watched.push(id);
-    showToast('<i class="fa-solid fa-check"></i> Marked as watched', 'green');
+    showToast(t('toast_marked_watched'), 'green');
     // Award bonus XP for milestones triggered by this watch
-    setTimeout(() => checkAndAwardBonuses(id), 400);
+    setTimeout(() => checkAndAwardBonuses(id), BONUS_CHECK_DELAY_MS);
   } else {
     USER_STATE.watched.splice(i, 1);
-    showToast('Removed from watched', 'red');
+    showToast(t('toast_removed_watched'), 'red');
   }
   saveUserState();
   updateAllUI();
@@ -547,7 +634,7 @@ function awardBonusXP(bonusKey, amount, label, icon) {
     );
   }, 800);
   // Re-render XP bar with new total
-  setTimeout(() => renderXPBar(), 900);
+  setTimeout(() => renderXPBar(), XP_BAR_RERENDER_MS);
 }
 
 function checkAndAwardBonuses(watchedId) {
@@ -598,15 +685,15 @@ function checkAndAwardBonuses(watchedId) {
 }
 
 function toggleWishlist(id, evt) {
-  if (IS_VIEW_MODE) { showToast('View-only mode', 'blue'); return; }
+  if (IS_VIEW_MODE) { showToast(t('toast_view_only'), 'blue'); return; }
   if (evt) evt.stopPropagation();
   const i = USER_STATE.wishlist.indexOf(id);
   if (i === -1) {
     USER_STATE.wishlist.push(id);
-    showToast('<i class="fa-solid fa-bookmark"></i> Added to wishlist', 'gold');
+    showToast(t('toast_added_wishlist'), 'gold');
   } else {
     USER_STATE.wishlist.splice(i, 1);
-    showToast('Removed from wishlist', 'red');
+    showToast(t('toast_removed_wishlist'), 'red');
   }
   saveUserState();
   updateAllUI();
@@ -614,6 +701,9 @@ function toggleWishlist(id, evt) {
 
 // ─── Main Render ──────────────────────────────────────
 function render() {
+  buildBottomNav();
+  buildTimelineFilters();
+  buildTabHeroes();
   renderHomeTab();
   renderTimelineTab();
   renderJourneyTab();
@@ -621,6 +711,32 @@ function render() {
   renderStarsTab();
   updateHeaderAvatar();
   updateWishlistBadge();
+}
+
+// Builds bottom nav dynamically from app.json tabs
+function buildBottomNav() {
+  const nav = document.getElementById('bottom-nav');
+  if (!nav || !TABS.length) return;
+  nav.innerHTML = TABS.map(t => {
+    const badgeHtml = t.badge
+      ? `<span id="${t.id}-badge" class="nav-badge hidden">0</span>`
+      : '';
+    return `<button class="nav-btn${t.id === activeTab ? ' active' : ''}" data-tab="${t.id}" onclick="switchTab('${t.id}')">
+  <i class="${t.icon_fa}"></i>
+  <span>${escapeHtml(t.label)}</span>
+  ${badgeHtml}
+</button>`;
+  }).join('');
+}
+
+// Builds the filter-row buttons dynamically from app.json timeline_filters
+function buildTimelineFilters() {
+  const filterRow = document.querySelector('.filter-row');
+  if (!filterRow || !TIMELINE_FILTERS.length) return;
+  filterRow.innerHTML = TIMELINE_FILTERS.map((f, i) => {
+    const active = i === 0 ? 'active' : '';
+    return `<button class="filter-btn ${active}" data-filter="${f.value}" onclick="setTypeFilter('${f.value}',this)">${f.label}</button>`;
+  }).join('');
 }
 
 function updateAllUI() {
@@ -632,6 +748,22 @@ function updateAllUI() {
   updateHeaderAvatar();
 }
 
+// Renders tab-hero-mini h1/p from app.json tabs[].hero_title / hero_sub
+function buildTabHeroes() {
+  if (!TABS.length) return;
+  TABS.forEach(t => {
+    if (!t.hero_title) return;
+    const section = document.getElementById(`tab-${t.id}`);
+    if (!section) return;
+    const mini = section.querySelector('.tab-hero-mini');
+    if (!mini) return;
+    const h1 = mini.querySelector('h1');
+    const p  = mini.querySelector('p');
+    if (h1) h1.textContent = t.hero_title;
+    if (p && t.hero_sub) p.textContent = t.hero_sub;
+  });
+}
+
 // ─── HOME TAB ─────────────────────────────────────────
 function renderHomeTab() {
   const total = MCU_DATA.entries.length;
@@ -640,6 +772,59 @@ function renderHomeTab() {
   renderPhaseOverview();
   renderCurrentlyWatching();
   renderUpcoming();
+  renderHeroCopy();
+  renderAuthorCard();
+}
+
+function renderHeroCopy() {
+  const h = HERO_CONFIG;
+  if (!h || !Object.keys(h).length) return;
+  const badge = document.querySelector('.phase-badge');
+  if (badge && h.eyebrow_badge) badge.textContent = h.eyebrow_badge;
+  const title = document.querySelector('.hero-title');
+  if (title && h.title_line1) title.innerHTML = `${escapeHtml(h.title_line1)}<br>${escapeHtml(h.title_line2||'')}`;
+  // hero.sub — supports {total} placeholder
+  if (h.sub) {
+    const subEl = document.querySelector('.hero-sub');
+    if (subEl) {
+      const total = MCU_DATA?.entries?.length || 0;
+      subEl.innerHTML = escapeHtml(h.sub).replace('{total}', `<strong id="hero-total">${total}</strong>`);
+    }
+  }
+  // hero.cta_buttons
+  if (Array.isArray(h.cta_buttons) && h.cta_buttons.length) {
+    const ctaRow = document.querySelector('.hero-cta-row');
+    if (ctaRow) {
+      ctaRow.innerHTML = h.cta_buttons.map(b =>
+        `<button class="${escapeHtml(b.style)}" onclick="switchTab('${escapeHtml(b.tab)}')">
+          <i class="${escapeHtml(b.icon_fa)}"></i> ${escapeHtml(b.label)}
+        </button>`
+      ).join('');
+    }
+  }
+  // Update logo src from app.json logo_path
+  const logoImg = document.querySelector('.header-logo-img');
+  if (logoImg && LOGO_PATH) logoImg.src = LOGO_PATH;
+}
+
+function renderAuthorCard() {
+  const a = AUTHOR_CONFIG;
+  if (!a || !Object.keys(a).length) return;
+  const card = document.querySelector('.about-footer-card');
+  if (!card) return;
+  const linksHtml = (a.links || []).map(l =>
+    `<a href="${l.url}" target="_blank" class="afc-btn ${l.style||''}"><i class="${l.icon_fa}"></i> ${escapeHtml(l.label)}</a>`
+  ).join('');
+  card.innerHTML = `
+    <div class="afc-left">
+      <img src="${a.avatar_img}" alt="${escapeHtml(a.name)}" class="afc-avatar afc-avatar-img">
+      <div class="afc-text">
+        <span class="afc-name">${escapeHtml(a.name)}</span>
+        <span class="afc-role">${escapeHtml(a.role)}</span>
+        <span class="afc-bio">${escapeHtml(a.bio)}</span>
+      </div>
+    </div>
+    <div class="afc-links">${linksHtml}</div>`;
 }
 
 function updateStats() {
@@ -667,7 +852,7 @@ function renderPhaseOverview() {
     const pct       = released.length > 0 ? (watched / released.length) * 100 : 0;
     const color     = PHASE_COLORS[p.id] || '#e23636';
 
-    return `<div class="phase-overview-card" data-phase="${p.id}" onclick="switchTab('timeline');setTimeout(()=>scrollToPhase('${p.id}'),200)">
+    return `<div class="phase-overview-card" data-phase="${p.id}" onclick="switchTab('timeline');setTimeout(()=>scrollToPhase('${p.id}'),window._TAB_SCROLL_DELAY||200)">
       <div class="poc-num" style="color:${color}">${p.number}</div>
       <div class="poc-label">Phase</div>
       <div class="poc-progress">
@@ -708,10 +893,14 @@ function renderUpcoming() {
 function buildMiniCard(id) {
   const e = getEntry(id);
   if (!e) return '';
-  const watched  = USER_STATE.watched.includes(id);
+  const watched    = USER_STATE.watched.includes(id);
   const wishlisted = USER_STATE.wishlist.includes(id);
-  const upcoming = isUpcoming(e);
-  const year = e.release_date ? e.release_date.split('-')[0] : '';
+  const statusKey  = getStatus(e);
+  const statusCfg  = STATUSES[statusKey] || {};
+  const year       = e.release_date ? e.release_date.split('-')[0] : '';
+  const statusTag  = statusCfg.card_tag
+    ? `<div class="mcu-card-upcoming-tag" style="color:${statusCfg.color || 'var(--gold)'}">${statusCfg.card_tag}</div>`
+    : '';
 
   return `<div class="mcu-card ${watched?'watched':''} ${wishlisted?'wishlisted':''}" onclick="openDetail('${id}')">
     <div style="position:relative">
@@ -720,7 +909,7 @@ function buildMiniCard(id) {
         ${watched  ? '<div class="card-badge badge-watched"><i class="fa-solid fa-check"></i></div>' : ''}
         ${wishlisted && !watched ? '<div class="card-badge badge-wishlist"><i class="fa-solid fa-bookmark"></i></div>' : ''}
       </div>
-      ${upcoming ? '<div class="mcu-card-upcoming-tag">Upcoming</div>' : ''}
+      ${statusTag}
     </div>
     <div class="mcu-card-body">
       <div class="mcu-card-title">${escapeHtml(e.title)}</div>
@@ -772,8 +961,13 @@ function buildTimelineHTML() {
 function buildFullCard(e) {
   const watched    = USER_STATE.watched.includes(e.id);
   const wishlisted = USER_STATE.wishlist.includes(e.id);
-  const upcoming   = isUpcoming(e);
+  const statusKey  = getStatus(e);
+  const upcoming   = statusKey !== 'released';
+  const statusCfg  = STATUSES[statusKey] || {};
   const year       = e.release_date ? e.release_date.split('-')[0] : '';
+  const statusTag  = statusCfg.card_tag
+    ? `<div class="mcu-card-upcoming-tag" style="color:${statusCfg.color || 'var(--gold)'}">${statusCfg.card_tag}</div>`
+    : '';
 
   return `<div class="mcu-card-full ${watched?'watched':''} ${wishlisted?'wishlisted':''} ${upcoming?'upcoming':''}"
     data-id="${e.id}" onclick="openDetail('${e.id}')">
@@ -781,7 +975,7 @@ function buildFullCard(e) {
       <img class="mcu-card-poster" src="${cachedImgUrl(e.image)}" alt="${escapeHtml(e.title)}" loading="lazy" onerror="this.style.background='var(--surface3)';this.src=''">
       ${watched ? '<div class="card-watched-indicator"><i class="fa-solid fa-check"></i></div>' : ''}
       ${wishlisted && !watched ? '<div class="card-wish-indicator"><i class="fa-solid fa-bookmark"></i></div>' : ''}
-      ${upcoming ? '<div class="mcu-card-upcoming-tag">Upcoming</div>' : ''}
+      ${statusTag}
       ${!upcoming ? `<div class="card-actions">
         <button class="card-action-btn watch-btn ${watched?'watched-active':''}" onclick="toggleWatched('${e.id}',event)" title="${watched?'Unmark':'Mark watched'}">
           <i class="fa-solid ${watched?'fa-check':'fa-eye'}"></i>
@@ -874,7 +1068,7 @@ function renderXPBar() {
   setEl('journey-xp-next',     nextRank ? `Next: ${nextRank.name} (${nextRank.min} XP)` : 'MAX RANK');
 
   const bar = document.getElementById('xp-bar-inner');
-  if (bar) setTimeout(() => { bar.style.width = pct + '%'; }, 300);
+  if (bar) setTimeout(() => { bar.style.width = pct + '%'; }, XP_BAR_ANIMATE_MS);
 }
 
 function renderAchievements() {
@@ -970,7 +1164,7 @@ function openNextToWatch() {
     return e && !isUpcoming(e) && !USER_STATE.watched.includes(id);
   });
   if (next) openDetail(next);
-  else showToast('<i class="fa-solid fa-champagne-glasses"></i> You\'ve watched everything!', 'gold');
+  else showToast(t('toast_all_watched'), 'gold');
 }
 
 // ─── WISHLIST TAB ─────────────────────────────────────
@@ -1004,7 +1198,7 @@ function renderStarsTab() {
   if (!container) return;
   container.innerHTML = STARS_DATA.stars.map(s => buildStarCard(s)).join('');
   const countEl = document.getElementById('stars-tab-count');
-  if (countEl) countEl.textContent = `${STARS_DATA.stars.length} cast & crew of the Marvel universe`;
+  if (countEl) countEl.textContent = t('stars_tab_count', { count: STARS_DATA.stars.length });
 }
 
 function buildStarCard(s) {
@@ -1042,7 +1236,7 @@ function initSearch() {
     const q = input.value.trim();
     syncSearchToUrl(q);
     if (q.length < 2) { drop.classList.add('hidden'); return; }
-    searchTimeout = setTimeout(() => renderSearchResults(q), 200);
+    searchTimeout = setTimeout(() => renderSearchResults(q), SEARCH_DEBOUNCE_MS);
   });
 
   input.addEventListener('focus', () => {
@@ -1127,11 +1321,18 @@ function _buildDetailContent(id) {
 
   const watched    = USER_STATE.watched.includes(id);
   const wishlisted = USER_STATE.wishlist.includes(id);
-  const upcoming   = isUpcoming(e);
+  const statusKey  = getStatus(e);
+  const upcoming   = statusKey !== 'released';
+  const statusCfg  = STATUSES[statusKey] || {};
   const year       = e.release_date ? e.release_date.split('-')[0] : 'TBA';
   const phaseData  = MCU_DATA.about?.phases?.find(p => p.id === e.phase);
   const phaseColor = PHASE_COLORS[e.phase] || '#e23636';
   const tagClass   = TYPE_COLORS[e.type] || 'tag-movie';
+  const statusBadge = (upcoming && statusCfg.label)
+    ? `<span class="detail-type-tag" style="background:rgba(255,255,255,0.07);color:${statusCfg.color||'var(--gold)'}">
+        ${statusCfg.icon_fa ? `<i class="${statusCfg.icon_fa}" style="margin-right:4px"></i>` : ''}${statusCfg.label}
+       </span>`
+    : '';
 
   // Ratings
   const ratingsHtml = [
@@ -1153,13 +1354,15 @@ function _buildDetailContent(id) {
     </div>`;
   }).join('');
 
-  // Watch platforms
-  const platformsHtml = (e.where_to_watch || []).map(w =>
-    `<div class="detail-watch-platform">
-      <img class="detail-platform-logo" src="${w.platform_id === 'disney_plus' ? '/assets/images/platforms/disney_plus.png' : '/assets/images/platforms/theaters.png'}" alt="${w.platform}" onerror="this.src=''">
+  // Watch platforms — logo resolved from data.json > streaming_platforms via STREAMING_PLATFORMS map
+  const platformsHtml = (e.where_to_watch || []).map(w => {
+    const platformDef = STREAMING_PLATFORMS[w.platform_id] || {};
+    const logoSrc     = platformDef.logo || '';
+    return `<div class="detail-watch-platform">
+      <img class="detail-platform-logo" src="${logoSrc}" alt="${w.platform}" onerror="this.style.display='none'">
       <a href="${w.url}" target="_blank" rel="noopener"><i class="fa-solid fa-play"></i> Watch on ${w.platform} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;opacity:0.6"></i></a>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
 
   // External links
   const links = e.links || {};
@@ -1176,7 +1379,7 @@ function _buildDetailContent(id) {
         <div class="detail-type-phase">
           <span class="detail-type-tag ${tagClass}">${TYPE_LABELS[e.type]||e.type}</span>
           <span class="detail-type-tag" style="background:rgba(255,255,255,0.08);color:var(--text3)">${phaseData?.name||''}</span>
-          ${upcoming ? '<span class="detail-type-tag" style="background:rgba(245,197,24,0.15);color:var(--gold)">Upcoming</span>' : ''}
+          ${statusBadge}
         </div>
         <h2 class="detail-title">${escapeHtml(e.title)}</h2>
         <div class="detail-meta-row">
@@ -1473,22 +1676,22 @@ function renderAccountContent() {
 function saveAccountName() {
   const input = document.getElementById('acct-name-input');
   const name  = input?.value.trim();
-  if (!name) { showToast('Enter a name first', 'red'); return; }
+  if (!name) { showToast(t('toast_enter_name'), 'red'); return; }
   USER_STATE.name = name;
   saveUserState();
   updateHeaderAvatar();
   renderAccountContent();
-  showToast(`Welcome, ${name}! <i class="fa-solid fa-bolt"></i>`, 'gold');
+  showToast(t('toast_welcome', { name }), 'gold');
 }
 
 function resetAccount() {
-  if (!confirm('This will delete ALL your watch history and wishlist. Are you sure?')) return;
+  if (!confirm(t('confirm_reset'))) return;
   USER_STATE = { name: '', watched: [], wishlist: [], avatar: null, bonus_xp: 0, earned_bonuses: [] };
   saveUserState();
   updateAllUI();
   renderAccountContent();
   closePanel('account-panel');
-  showToast('Data reset', 'red');
+  showToast(t('toast_data_reset'), 'red');
 }
 
 function updateHeaderAvatar() {
@@ -1511,7 +1714,7 @@ function updateHeaderAvatar() {
 function openSharePanel() {
   if (!USER_STATE.name) {
     openAccountPanel();
-    showToast('Set your name first to share', 'gold');
+    showToast(t('toast_set_name_first'), 'gold');
     return;
   }
   renderShareContent();
@@ -1562,7 +1765,7 @@ function renderShareContent() {
 
 function copyToClipboard(url, fallbackElId) {
   navigator.clipboard.writeText(url).then(() => {
-    showToast('<i class="fa-solid fa-copy"></i> Link copied!', 'blue');
+    showToast(t('toast_link_copied'), 'blue');
   }).catch(() => {
     const el = document.getElementById(fallbackElId);
     if (el) {
@@ -1570,7 +1773,7 @@ function copyToClipboard(url, fallbackElId) {
       range.selectNode(el);
       window.getSelection()?.addRange(range);
     }
-    showToast('Select and copy the link', 'gold');
+    showToast(t('toast_select_copy'), 'gold');
   });
 }
 
@@ -1630,7 +1833,7 @@ function confirmImport(profileData) {
   // Clean the URL so refreshing doesn't re-trigger the import
   window.history.replaceState({}, '', window.location.pathname);
   window._pendingImport = null;
-  showToast(`<i class="fa-solid fa-check"></i> Profile imported — welcome, ${escapeHtml(USER_STATE.name || 'back')}!`, 'green');
+  showToast(t('toast_imported', { name: escapeHtml(USER_STATE.name || 'back') }), 'green');
 }
 
 function dismissImport() {
@@ -1648,7 +1851,7 @@ function openPanel(id) {
 function closePanel(id) {
   document.getElementById(id)?.classList.add('hidden');
   // Only clear overflow if all panels closed
-  const panels = ['detail-panel','star-panel','account-panel','share-panel','import-panel'];
+  const panels = PANELS;
   const anyOpen = panels.some(p => !document.getElementById(p)?.classList.contains('hidden'));
   if (!anyOpen) document.body.style.overflow = '';
   if (!_suppressPopState) clearModalFromUrl();
@@ -1686,7 +1889,7 @@ function setupEventListeners() {
   // Close panels on Escape
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      ['detail-panel','star-panel','account-panel','share-panel','import-panel'].forEach(id => {
+      PANELS.forEach(id => {
         const el = document.getElementById(id);
         if (el && !el.classList.contains('hidden')) closePanel(id);
       });
@@ -1698,7 +1901,7 @@ function setupEventListeners() {
     if (_suppressPopState) return;
     // Close all panels
     _suppressPopState = true;
-    ['detail-panel','star-panel','account-panel','share-panel','import-panel'].forEach(id => {
+    PANELS.forEach(id => {
       document.getElementById(id)?.classList.add('hidden');
     });
     document.body.style.overflow = '';
@@ -1707,7 +1910,8 @@ function setupEventListeners() {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('t');
     const id  = params.get('id');
-    if (tab && ['home','timeline','journey','wishlist','stars'].includes(tab)) switchTabSilent(tab);
+    const validTabs = TABS.length ? TABS.map(t => t.id) : ['home','timeline','journey','wishlist','stars'];
+    if (tab && validTabs.includes(tab)) switchTabSilent(tab);
     if (id) {
       if (id === 'profile') openAccountPanelSilent();
       else if (id === 'share') openSharePanelSilent();
@@ -1727,10 +1931,17 @@ function getEntry(id) {
   return MCU_DATA.entries.find(e => e.id === id) || null;
 }
 
+// Returns the status key for an entry: uses e.status if present in STATUSES,
+// otherwise falls back to date-comparison (future date → 'upcoming', past → 'released').
+function getStatus(e) {
+  if (e.status && STATUSES[e.status]) return e.status;
+  if (!e.release_date) return 'upcoming';
+  return new Date(e.release_date) > new Date() ? 'upcoming' : 'released';
+}
+
+// Thin wrapper — kept so callers don't all need updating
 function isUpcoming(e) {
-  if (e.status === 'upcoming') return true;
-  if (!e.release_date) return false;
-  return new Date(e.release_date) > new Date();
+  return getStatus(e) !== 'released';
 }
 
 function phaseComplete(state, phaseId) {
@@ -1770,6 +1981,6 @@ function showToast(msg, type = '') {
 
   setTimeout(() => {
     toast.classList.add('fade-out');
-    setTimeout(() => toast.remove(), 300);
-  }, 2200);
+    setTimeout(() => toast.remove(), TOAST_FADE_MS);
+  }, TOAST_DURATION_MS);
 }
