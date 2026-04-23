@@ -984,6 +984,245 @@ MD;
         exit;
     }
 
+    // ─── GET: cast health check ──────────────────────────────
+    // Finds stars whose mcu_appearances contain a title ID that does NOT
+    // appear in that title's cast list (i.e. the appearance is "phantom").
+    if ($action === 'cast_health_check') {
+        $mcu   = readJson(PATH_MCU_JSON);
+        $stars = readJson(PATH_STARS_JSON);
+
+        // Build a quick lookup: titleId → set of star_ids actually in its cast
+        $castIndex = [];
+        foreach ($mcu['entries'] ?? [] as $e) {
+            $castIndex[$e['id']] = [];
+            foreach ($e['cast'] ?? [] as $c) {
+                if (!empty($c['star_id'])) {
+                    $castIndex[$e['id']][] = $c['star_id'];
+                }
+            }
+        }
+
+        // Build a set of all valid MCU title IDs
+        $validTitleIds = array_keys($castIndex);
+
+        $issues = [];
+        foreach ($stars['stars'] ?? [] as $s) {
+            $starId   = $s['id'];
+            $starName = $s['name'] ?? $starId;
+            foreach ($s['mcu_appearances'] ?? [] as $titleId) {
+                // Case 1: title ID doesn't exist at all in mcu.json
+                if (!in_array($titleId, $validTitleIds)) {
+                    $issues[] = [
+                        'star_id'    => $starId,
+                        'star_name'  => $starName,
+                        'title_id'   => $titleId,
+                        'title_name' => null,
+                        'reason'     => 'title_not_found',
+                    ];
+                    continue;
+                }
+                // Case 2: title exists but star is not in its cast
+                if (!in_array($starId, $castIndex[$titleId])) {
+                    // find the title's name for display
+                    $titleName = $titleId;
+                    foreach ($mcu['entries'] ?? [] as $e) {
+                        if ($e['id'] === $titleId) { $titleName = $e['title'] ?? $titleId; break; }
+                    }
+                    $issues[] = [
+                        'star_id'    => $starId,
+                        'star_name'  => $starName,
+                        'title_id'   => $titleId,
+                        'title_name' => $titleName,
+                        'reason'     => 'not_in_cast',
+                    ];
+                }
+            }
+        }
+
+        echo json_encode(['ok' => true, 'issues' => $issues, 'total' => count($issues)]);
+        exit;
+    }
+
+    // ─── POST: fix cast appearance — remove phantom title ID from star ──
+    if ($action === 'fix_cast_appearance' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        checkRequestSize();
+        $input   = json_decode(file_get_contents('php://input'), true);
+        $starId  = $input['star_id']  ?? '';
+        $titleId = $input['title_id'] ?? '';
+
+        if (!validateId($starId) || !validateId($titleId)) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'Invalid ID']);
+            exit;
+        }
+
+        $db = readJson(PATH_STARS_JSON);
+        foreach ($db['stars'] as &$s) {
+            if ($s['id'] === $starId) {
+                $s['mcu_appearances'] = array_values(
+                    array_filter($s['mcu_appearances'] ?? [], fn($x) => $x !== $titleId)
+                );
+                break;
+            }
+        }
+        unset($s);
+
+        writeJson(PATH_STARS_JSON, $db);
+        broadcastChange('stars');
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+
+    // ─── POST: fix cast — add star to the title's cast ───────
+    // Alternative fix for cast_health_check: instead of removing the title
+    // from the star's appearances, add the star to the title's cast.
+    if ($action === 'fix_cast_add_to_cast' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        checkRequestSize();
+        $input   = json_decode(file_get_contents('php://input'), true);
+        $starId  = $input['star_id']  ?? '';
+        $titleId = $input['title_id'] ?? '';
+
+        if (!validateId($starId) || !validateId($titleId)) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'Invalid ID']);
+            exit;
+        }
+
+        $mcuDb = readJson(PATH_MCU_JSON);
+        $found = false;
+        foreach ($mcuDb['entries'] as &$e) {
+            if ($e['id'] !== $titleId) continue;
+            $found = true;
+            // Only add if not already present
+            $already = false;
+            foreach ($e['cast'] ?? [] as $c) {
+                if (($c['star_id'] ?? '') === $starId) { $already = true; break; }
+            }
+            if (!$already) {
+                $e['cast'][] = ['star_id' => $starId, 'character' => ''];
+            }
+            break;
+        }
+        unset($e);
+
+        if (!$found) {
+            http_response_code(404);
+            echo json_encode(['ok' => false, 'error' => 'Title not found']);
+            exit;
+        }
+
+        writeJson(PATH_MCU_JSON, $mcuDb);
+        broadcastChange('mcu');
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+
+    // ─── GET: reverse cast health check ─────────────────────
+    // Finds stars who ARE in a title's cast list but the title is NOT in
+    // their mcu_appearances (the mirror-image of cast_health_check).
+    if ($action === 'reverse_cast_health_check') {
+        $mcu   = readJson(PATH_MCU_JSON);
+        $stars = readJson(PATH_STARS_JSON);
+
+        // Build a quick lookup: starId → set of title IDs in mcu_appearances
+        $appearanceIndex = [];
+        foreach ($stars['stars'] ?? [] as $s) {
+            $appearanceIndex[$s['id']] = $s['mcu_appearances'] ?? [];
+        }
+
+        $issues = [];
+        foreach ($mcu['entries'] ?? [] as $e) {
+            $titleId   = $e['id'];
+            $titleName = $e['title'] ?? $titleId;
+            foreach ($e['cast'] ?? [] as $c) {
+                $starId = $c['star_id'] ?? '';
+                if (!$starId) continue;
+                // Star exists in the global stars list?
+                if (!array_key_exists($starId, $appearanceIndex)) continue;
+                // Title already in star's mcu_appearances? All good.
+                if (in_array($titleId, $appearanceIndex[$starId])) continue;
+                // Find the star's display name
+                $starName = $starId;
+                foreach ($stars['stars'] ?? [] as $s) {
+                    if ($s['id'] === $starId) { $starName = $s['name'] ?? $starId; break; }
+                }
+                $issues[] = [
+                    'star_id'    => $starId,
+                    'star_name'  => $starName,
+                    'title_id'   => $titleId,
+                    'title_name' => $titleName,
+                ];
+            }
+        }
+
+        echo json_encode(['ok' => true, 'issues' => $issues, 'total' => count($issues)]);
+        exit;
+    }
+
+    // ─── POST: fix reverse cast appearance ───────────────────
+    // Adds the title to the star's mcu_appearances.
+    if ($action === 'fix_reverse_cast_appearance' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        checkRequestSize();
+        $input   = json_decode(file_get_contents('php://input'), true);
+        $starId  = $input['star_id']  ?? '';
+        $titleId = $input['title_id'] ?? '';
+
+        if (!validateId($starId) || !validateId($titleId)) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'Invalid ID']);
+            exit;
+        }
+
+        $db = readJson(PATH_STARS_JSON);
+        foreach ($db['stars'] as &$s) {
+            if ($s['id'] === $starId) {
+                $apps = $s['mcu_appearances'] ?? [];
+                if (!in_array($titleId, $apps)) {
+                    $apps[] = $titleId;
+                }
+                $s['mcu_appearances'] = array_values(array_unique($apps));
+                break;
+            }
+        }
+        unset($s);
+
+        writeJson(PATH_STARS_JSON, $db);
+        broadcastChange('stars');
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+
+    // ─── POST: fix reverse cast — remove star from title's cast ──
+    // Alternative fix for reverse_cast_health_check: instead of adding the
+    // title to the star's appearances, remove the star from the title's cast.
+    if ($action === 'fix_reverse_cast_remove_from_cast' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        checkRequestSize();
+        $input   = json_decode(file_get_contents('php://input'), true);
+        $starId  = $input['star_id']  ?? '';
+        $titleId = $input['title_id'] ?? '';
+
+        if (!validateId($starId) || !validateId($titleId)) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'Invalid ID']);
+            exit;
+        }
+
+        $mcuDb = readJson(PATH_MCU_JSON);
+        foreach ($mcuDb['entries'] as &$e) {
+            if ($e['id'] !== $titleId) continue;
+            $e['cast'] = array_values(
+                array_filter($e['cast'] ?? [], fn($c) => ($c['star_id'] ?? '') !== $starId)
+            );
+            break;
+        }
+        unset($e);
+
+        writeJson(PATH_MCU_JSON, $mcuDb);
+        broadcastChange('mcu');
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+
     // ─── GET: SSE — real-time change stream ──────────────────
     // Clients connect once; server polls the version file and pushes
     // 'change' events whenever another user saves something.

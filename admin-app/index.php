@@ -381,6 +381,39 @@ if ($action !== '') {
   </div>
 </div>
 
+<!-- ═══ RANK MODAL ═══════════════════════════════════════════════════ -->
+<div id="rank-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button class="modal-close-btn" id="rank-modal-close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-icon" style="background:rgba(234,179,8,.15);color:var(--gold)"><i class="fa-solid fa-ranking-star"></i></div>
+    <h3 id="rank-modal-title">Add Rank</h3>
+    <div class="rank-modal-grid">
+      <div class="form-group">
+        <label class="form-label">ID</label>
+        <input type="text" id="rank-id-input" class="form-input" placeholder="rank_hero">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input type="text" id="rank-name-input" class="form-input" placeholder="Hero">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Min XP</label>
+        <input type="number" id="rank-minxp-input" class="form-input" placeholder="0" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Level <small>(auto after save)</small></label>
+        <input type="number" id="rank-level-input" class="form-input" placeholder="1" min="1">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" id="rank-modal-cancel">Cancel</button>
+      <button class="btn-primary" id="rank-modal-save">
+        <i class="fa-solid fa-floppy-disk"></i> Save Rank
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ ACHIEVEMENT MODAL ══════════════════════════════════════════════════ -->
 <div id="achievement-modal" class="modal-overlay hidden">
   <div class="modal-box">
@@ -492,8 +525,8 @@ if ($action !== '') {
       <div class="stat-card">
         <i class="fa-solid fa-film stat-icon" style="color:#a855f7"></i>
         <div class="stat-body">
-          <div class="stat-num" id="ov-filter-count">—</div>
-          <div class="stat-label">Filters</div>
+          <div class="stat-num" id="ov-titles-count">—</div>
+          <div class="stat-label">Titles</div>
         </div>
       </div>
     </div>
@@ -501,25 +534,25 @@ if ($action !== '') {
     <div class="quick-actions-card">
       <h2 class="card-title"><i class="fa-solid fa-bolt"></i> Quick Actions</h2>
       <div class="qa-grid">
-        <button class="qa-btn" onclick="Admin.switchSection('app-config')">
+        <button class="qa-btn" onclick="Admin.quickAction('app-identity')">
           <i class="fa-solid fa-cube"></i>
           <span>App Identity</span>
         </button>
-        <button class="qa-btn" onclick="Admin.switchSection('app-config')">
-          <i class="fa-solid fa-image"></i>
-          <span>Update Media</span>
+        <button class="qa-btn" onclick="Admin.quickAction('hero')">
+          <i class="fa-solid fa-wand-sparkles"></i>
+          <span>Edit Hero</span>
         </button>
-        <button class="qa-btn" onclick="Admin.switchSection('avatars')">
+        <button class="qa-btn" onclick="Admin.quickAction('add-avatar')">
           <i class="fa-solid fa-user-plus"></i>
           <span>Add Avatar</span>
         </button>
-        <button class="qa-btn" onclick="Admin.switchSection('progression')">
-          <i class="fa-solid fa-trophy"></i>
-          <span>Progression</span>
+        <button class="qa-btn" onclick="Admin.quickAction('add-rank')">
+          <i class="fa-solid fa-ranking-star"></i>
+          <span>Add Rank</span>
         </button>
-        <button class="qa-btn" onclick="Admin.switchSection('ui-text')">
-          <i class="fa-solid fa-font"></i>
-          <span>UI Text</span>
+        <button class="qa-btn" onclick="Admin.quickAction('add-achievement')">
+          <i class="fa-solid fa-trophy"></i>
+          <span>Add Achievement</span>
         </button>
         <button class="qa-btn" onclick="Admin.saveAll()">
           <i class="fa-solid fa-floppy-disk"></i>
@@ -547,7 +580,7 @@ if ($action !== '') {
       <p class="section-sub">Core application settings from app.json</p>
     </div>
 
-    <div class="config-card">
+    <div class="config-card" id="card-app-identity">
       <h2 class="card-title"><i class="fa-solid fa-cube"></i> App Identity</h2>
       <div class="form-row">
         <div class="form-group">
@@ -655,7 +688,7 @@ if ($action !== '') {
       </div>
     </div>
 
-    <div class="config-card">
+    <div class="config-card" id="card-hero">
       <h2 class="card-title"><i class="fa-solid fa-wand-sparkles"></i> Hero Section</h2>
       <div class="form-group hero-eyebrow-wide">
         <label class="form-label">Eyebrow Badge</label>
@@ -733,6 +766,10 @@ if ($action !== '') {
         <label class="form-label">Bio</label>
         <textarea class="form-input form-textarea" id="cfg-author-bio" rows="2"></textarea>
       </div>
+      <div class="form-group">
+        <label class="form-label">Author Photo Path <small>(used in app.json)</small></label>
+        <input type="text" class="form-input" id="cfg-author-avatar-img" placeholder="/assets/app/me.png">
+      </div>
       <div id="author-links-list" class="author-links-list"></div>
       <button class="btn-outline btn-sm mt-2" onclick="Admin.addAuthorLink()">
         <i class="fa-solid fa-plus"></i> Add Link
@@ -745,6 +782,118 @@ if ($action !== '') {
       <button class="btn-outline btn-sm mt-2" onclick="Admin.addTimelineFilter()">
         <i class="fa-solid fa-plus"></i> Add Filter
       </button>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-rectangle-list"></i> Navigation Tabs</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Labels, icons, and hero text for each bottom navigation tab.</p>
+      <div id="tabs-editor-list" class="tabs-editor-list"></div>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-hand-pointer"></i> Hero CTA Buttons</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">The action buttons shown in the home hero banner.</p>
+      <div id="hero-cta-list"></div>
+      <button class="btn-outline btn-sm mt-2" onclick="Admin.addCtaButton()">
+        <i class="fa-solid fa-plus"></i> Add Button
+      </button>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-tag"></i> Content Types</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Display labels and CSS classes for movie, series, special, and short.</p>
+      <div id="content-types-grid" class="content-type-grid"></div>
+      <button class="btn-outline btn-sm mt-2" onclick="Admin.addContentType()">
+        <i class="fa-solid fa-plus"></i> Add Content Type
+      </button>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-circle-dot"></i> Status Definitions</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Label, color, icon, and card tag for each release status.</p>
+      <div id="statuses-grid" class="content-type-grid"></div>
+      <button class="btn-outline btn-sm mt-2" onclick="Admin.addStatus()">
+        <i class="fa-solid fa-plus"></i> Add Status
+      </button>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-database"></i> Data Source Paths</h2>
+      <div class="data-source-grid" id="data-sources-grid"></div>
+      <div class="form-row" style="margin-top:12px">
+        <div class="form-group">
+          <label class="form-label">App Logo Path</label>
+          <input type="text" class="form-input" id="cfg-app-logo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Avatars Base Path</label>
+          <input type="text" class="form-input" id="cfg-avatars-base-path">
+        </div>
+      </div>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-mouse-pointer"></i> Logo Click Easter Egg</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Multi-click sequence that triggers a cache bust.</p>
+      <div class="logo-click-grid">
+        <div class="form-group">
+          <label class="form-label">Clicks Required</label>
+          <input type="number" class="form-input" id="cfg-lc-clicks" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Window (ms)</label>
+          <input type="number" class="form-input" id="cfg-lc-window">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bust Delay (ms)</label>
+          <input type="number" class="form-input" id="cfg-lc-delay">
+        </div>
+      </div>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-stopwatch"></i> Extra Timing Settings <small>(ms)</small></h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Bonus Check Delay</label>
+          <input type="number" class="form-input" id="cfg-bonus-check-delay">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tab Scroll Delay</label>
+          <input type="number" class="form-input" id="cfg-tab-scroll-delay">
+        </div>
+      </div>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-user-gear"></i> Profile — Default State</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Starting values for brand-new users.</p>
+      <div class="profile-state-grid">
+        <div class="form-group">
+          <label class="form-label">Default Name</label>
+          <input type="text" class="form-input" id="cfg-profile-default-name" placeholder="(leave empty)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Default Bonus XP</label>
+          <input type="number" class="form-input" id="cfg-profile-bonus-xp" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Default Avatar <small>(avatar id or null)</small></label>
+        <input type="text" class="form-input" id="cfg-profile-default-avatar" placeholder="null">
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="form-label">Default Watched <small>(JSON array of mcu ids)</small></label>
+        <input type="text" class="form-input" id="cfg-profile-default-watched" placeholder='[]' style="font-family:monospace;font-size:12px">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Default Wishlist <small>(JSON array of mcu ids)</small></label>
+        <input type="text" class="form-input" id="cfg-profile-default-wishlist" placeholder='[]' style="font-family:monospace;font-size:12px">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Default Earned Bonuses <small>(JSON array)</small></label>
+        <input type="text" class="form-input" id="cfg-profile-default-earned" placeholder='[]' style="font-family:monospace;font-size:12px">
+      </div>
     </div>
 
     <div class="save-bar">
@@ -841,7 +990,7 @@ if ($action !== '') {
 
     <div class="config-card">
       <h2 class="card-title"><i class="fa-solid fa-star"></i> XP Values</h2>
-      <div class="form-row-3">
+      <div class="xp-values-grid">
         <div class="form-group">
           <label class="form-label">XP per Watched</label>
           <input type="number" class="form-input" id="prog-xp-watched">
@@ -854,24 +1003,42 @@ if ($action !== '') {
           <label class="form-label">Saga Completion Bonus</label>
           <input type="number" class="form-input" id="prog-saga-bonus">
         </div>
+      <div class="form-group" style="max-width:200px;margin-top:4px">
+        <label class="form-label">Achievement Base Bonus</label>
+        <input type="number" class="form-input" id="prog-ach-bonus">
+      </div>
       </div>
     </div>
 
     <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-layer-group"></i> Per-Phase XP Bonuses</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Extra XP awarded on top of the base bonus when a specific phase is fully completed.</p>
+      <div class="phase-bonus-grid" id="phase-bonus-grid"></div>
+    </div>
+
+    <div class="config-card">
+      <h2 class="card-title"><i class="fa-solid fa-infinity"></i> Per-Saga XP Bonuses</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:14px">Extra XP awarded when a full saga is completed.</p>
+      <div class="saga-bonus-grid" id="saga-bonus-grid"></div>
+    </div>
+
+    <div class="config-card" id="card-ranks">
       <h2 class="card-title"><i class="fa-solid fa-ranking-star"></i> Ranks</h2>
       <div id="ranks-list" class="ranks-list"></div>
-      <button class="btn-outline btn-sm mt-2" onclick="Admin.addRank()">
+      <button class="btn-outline btn-sm mt-2" onclick="Admin.openRankModal(null)">
         <i class="fa-solid fa-plus"></i> Add Rank
       </button>
     </div>
 
-    <div class="config-card">
+    <div class="config-card" id="card-achievements">
       <h2 class="card-title"><i class="fa-solid fa-trophy"></i> Achievements</h2>
       <div id="achievements-list" class="achievements-admin-list"></div>
       <button class="btn-outline btn-sm mt-2" onclick="Admin.addAchievement()">
         <i class="fa-solid fa-plus"></i> Add Achievement
       </button>
     </div>
+
+    <div class="save-bar">
       <button class="btn-primary btn-lg" onclick="Admin.saveAll()">
         <i class="fa-solid fa-floppy-disk"></i> Save Progression
       </button>

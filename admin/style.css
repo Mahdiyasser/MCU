@@ -2587,6 +2587,70 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .health-ds-badge.mcu  { background: var(--red-dim);  color: var(--red);  border: 1px solid var(--red); }
 .health-ds-badge.star { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold); }
 
+.cast-health-fix-btn {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  background: var(--red-dim);
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+.cast-health-fix-btn:hover:not(:disabled) { background: var(--red); color: #fff; }
+.cast-health-fix-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* When two fix buttons appear side-by-side in a row */
+.cast-fix-btn-group {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* "Add" variant — blue/gold accent instead of red */
+.cast-health-fix-btn.cast-fix-alt {
+  background: var(--blue-dim, rgba(59,130,246,.12));
+  border-color: var(--blue, #3b82f6);
+  color: var(--blue, #3b82f6);
+}
+.cast-health-fix-btn.cast-fix-alt:hover:not(:disabled) {
+  background: var(--blue, #3b82f6);
+  color: #fff;
+}
+
+/* Danger "Remove" variant keeps red styling (inherits base) */
+.cast-health-fix-btn.cast-fix-danger {
+  background: var(--red-dim);
+  border-color: var(--red);
+  color: var(--red);
+}
+.cast-health-fix-btn.cast-fix-danger:hover:not(:disabled) {
+  background: var(--red);
+  color: #fff;
+}
+
+.cast-health-fix-all-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0 2px;
+}
+
+.cast-health-fix-all-btn {
+  gap: 6px;
+}
+
+.cast-health-issues .health-issue-row {
+  align-items: flex-start;
+}
+
+
 /* ─── SETTINGS RESPONSIVE ───────────────────────────────── */
 @media (max-width: 900px) {
   .settings-grid { grid-template-columns: 1fr; }

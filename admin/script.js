@@ -2860,6 +2860,34 @@ function renderSettings() {
     </div>
   </div>
 
+  <!-- ── CAST HEALTH CHECK ── -->
+  <div class="settings-card settings-card-full" id="cast-health-card">
+    <div class="settings-card-header">
+      <div class="settings-card-title"><i class="fa-solid fa-users-slash txt-gold"></i> Cast Integrity Check</div>
+      <button class="settings-save-btn" id="cast-health-run-btn" onclick="runCastHealthCheck()">
+        <i class="fa-solid fa-magnifying-glass"></i> Run Check
+      </button>
+    </div>
+    <div id="cast-health-body" class="health-check-idle">
+      <i class="fa-solid fa-users-slash"></i>
+      <span>Click <strong>Run Check</strong> to find stars whose <code>mcu_appearances</code> list a title they are not actually cast in.</span>
+    </div>
+  </div>
+
+  <!-- ── REVERSE CAST INTEGRITY CHECK ── -->
+  <div class="settings-card settings-card-full" id="reverse-cast-health-card">
+    <div class="settings-card-header">
+      <div class="settings-card-title"><i class="fa-solid fa-user-plus txt-blue"></i> Reverse Cast Integrity Check</div>
+      <button class="settings-save-btn" id="reverse-cast-health-run-btn" onclick="runReverseCastHealthCheck()">
+        <i class="fa-solid fa-magnifying-glass"></i> Run Check
+      </button>
+    </div>
+    <div id="reverse-cast-health-body" class="health-check-idle">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>Click <strong>Run Check</strong> to find stars who are in a title's cast but that title is missing from their <code>mcu_appearances</code>.</span>
+    </div>
+  </div>
+
   <!-- ── IMAGE ARCHIVE ── -->
   <div class="settings-card settings-card-full settings-archive-card">
     <div class="settings-card-header">
@@ -3162,9 +3190,255 @@ async function runHealthCheck() {
   }
 }
 
-// ─── DUPLICATE ID VALIDATOR ──────────────────────────────────
-// Highlights inputs that share the same value (case-insensitive).
-// Returns true if any duplicates were found.
+// ────────────────────────────────────────────────────────────
+// CAST INTEGRITY HEALTH CHECK
+// ────────────────────────────────────────────────────────────
+async function runCastHealthCheck() {
+  const body = document.getElementById("cast-health-body");
+  const btn  = document.getElementById("cast-health-run-btn");
+  if (!body) return;
+
+  body.className = "health-check-loading";
+  body.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i><span>Comparing cast lists with appearance records…</span>`;
+  if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Scanning…`; }
+
+  try {
+    const res = await api("cast_health_check");
+    const { issues } = res;
+    const allGood = issues.length === 0;
+
+    const summaryHtml = `
+    <div class="health-summary">
+      <div class="health-summary-item ${allGood ? 'ok' : 'err'}">
+        <div class="health-summary-top">
+          <i class="fa-solid fa-${allGood ? 'circle-check' : 'triangle-exclamation'}"></i>
+          <span class="health-summary-num">${issues.length}</span>
+        </div>
+        <span class="health-summary-label">Phantom Appearances</span>
+      </div>
+      <div class="health-summary-breakdown">
+        <span><i class="fa-solid fa-users"></i> Stars with mismatched appearances: ${new Set(issues.map(i => i.star_id)).size}</span>
+        <span><i class="fa-solid fa-film"></i> Titles referenced but not in cast: ${new Set(issues.map(i => i.title_id)).size}</span>
+      </div>
+    </div>`;
+
+    if (allGood) {
+      body.className = "health-check-results";
+      body.innerHTML = summaryHtml + `
+      <div class="health-all-good">
+        <i class="fa-solid fa-circle-check"></i>
+        <div class="health-all-good-text">
+          <strong>Cast Integrity OK</strong>
+          <span>All <code>mcu_appearances</code> entries match their respective title cast lists.</span>
+        </div>
+      </div>`;
+    } else {
+      const rows = issues.map((issue, idx) => {
+        const isTitleNotFound = issue.reason === 'title_not_found';
+        const reasonLabel = isTitleNotFound
+          ? `Title <code>${esc(issue.title_id)}</code> does not exist in MCU database`
+          : `<strong>${esc(issue.star_name)}</strong> is in appearances for <strong>${esc(issue.title_name)}</strong> but is not in its cast`;
+        const btns = isTitleNotFound
+          ? `<button class="cast-health-fix-btn" id="cast-fix-btn-rem-${idx}"
+               onclick="fixCastRemoveAppearance('${esc(issue.star_id)}','${esc(issue.title_id)}',${idx})">
+               <i class="fa-solid fa-scissors"></i> Remove
+             </button>`
+          : `<button class="cast-health-fix-btn" id="cast-fix-btn-rem-${idx}"
+               onclick="fixCastRemoveAppearance('${esc(issue.star_id)}','${esc(issue.title_id)}',${idx})">
+               <i class="fa-solid fa-scissors"></i> Remove
+             </button>
+             <button class="cast-health-fix-btn cast-fix-alt" id="cast-fix-btn-add-${idx}"
+               onclick="fixCastAddToCast('${esc(issue.star_id)}','${esc(issue.title_id)}',${idx})">
+               <i class="fa-solid fa-user-plus"></i> Add to Cast
+             </button>`;
+        return `
+        <div class="health-issue-row missing" id="cast-issue-row-${idx}">
+          <i class="fa-solid fa-user-slash health-issue-icon missing"></i>
+          <div class="health-issue-info">
+            <span class="health-issue-text">${reasonLabel}</span>
+            <span class="health-issue-id">${esc(issue.star_id)} → ${esc(issue.title_id)}</span>
+          </div>
+          <span class="health-ds-badge star"><i class="fa-solid fa-star"></i> Star</span>
+          <div class="cast-fix-btn-group">${btns}</div>
+        </div>`;
+      }).join("");
+
+      body.className = "health-check-results";
+      body.innerHTML = summaryHtml + `
+      <div class="health-issues-list cast-health-issues">${rows}</div>`;
+    }
+  } catch (e) {
+    body.className = "health-check-idle";
+    body.innerHTML = `<i class="fa-solid fa-circle-xmark txt-red"></i><span>Cast health check failed: ${esc(e.message)}</span>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Run Check`; }
+  }
+}
+
+// Shared helper: mark a cast-issue-row as resolved
+function _markCastRowFixed(rowIdx, label) {
+  const row = document.getElementById(`cast-issue-row-${rowIdx}`);
+  if (!row) return;
+  row.style.opacity = "0.4";
+  row.style.pointerEvents = "none";
+  const txt = row.querySelector(".health-issue-text");
+  if (txt) txt.innerHTML = `<s>${txt.innerHTML}</s> <span class="txt-green" style="font-size:11px"><i class="fa-solid fa-circle-check"></i> ${label}</span>`;
+  row.querySelectorAll(".cast-health-fix-btn").forEach(b => { b.disabled = true; b.innerHTML = `<i class="fa-solid fa-circle-check"></i>`; });
+}
+
+// Option A: remove the phantom title from the star's mcu_appearances
+async function fixCastRemoveAppearance(starId, titleId, rowIdx) {
+  const btn = document.getElementById(`cast-fix-btn-rem-${rowIdx}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>`; }
+  try {
+    await api("fix_cast_appearance", { star_id: starId, title_id: titleId });
+    _SSE.notifyOwnSave();
+    _markCastRowFixed(rowIdx, "Removed from appearances");
+    toast(`Removed ${titleId} from ${starId}'s appearances`, "success");
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-scissors"></i> Remove`; }
+    toast("Fix failed: " + e.message, "error");
+  }
+}
+
+// Option B: add the star to the title's cast list
+async function fixCastAddToCast(starId, titleId, rowIdx) {
+  const btn = document.getElementById(`cast-fix-btn-add-${rowIdx}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>`; }
+  try {
+    await api("fix_cast_add_to_cast", { star_id: starId, title_id: titleId });
+    _SSE.notifyOwnSave();
+    _markCastRowFixed(rowIdx, "Added to cast");
+    toast(`Added ${starId} to cast of ${titleId}`, "success");
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Add to Cast`; }
+    toast("Fix failed: " + e.message, "error");
+  }
+}
+
+
+// ────────────────────────────────────────────────────────────
+// REVERSE CAST INTEGRITY CHECK
+// Finds stars in a title's cast whose mcu_appearances is missing that title.
+// Fix = add the title to their mcu_appearances.
+// ────────────────────────────────────────────────────────────
+async function runReverseCastHealthCheck() {
+  const body = document.getElementById("reverse-cast-health-body");
+  const btn  = document.getElementById("reverse-cast-health-run-btn");
+  if (!body) return;
+
+  body.className = "health-check-loading";
+  body.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i><span>Scanning cast lists for missing appearance entries…</span>`;
+  if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Scanning…`; }
+
+  try {
+    const res = await api("reverse_cast_health_check");
+    const { issues } = res;
+    const allGood = issues.length === 0;
+
+    const summaryHtml = `
+    <div class="health-summary">
+      <div class="health-summary-item ${allGood ? 'ok' : 'err'}">
+        <div class="health-summary-top">
+          <i class="fa-solid fa-${allGood ? 'circle-check' : 'triangle-exclamation'}"></i>
+          <span class="health-summary-num">${issues.length}</span>
+        </div>
+        <span class="health-summary-label">Missing Appearances</span>
+      </div>
+      <div class="health-summary-breakdown">
+        <span><i class="fa-solid fa-users"></i> Stars with missing appearances: ${new Set(issues.map(i => i.star_id)).size}</span>
+        <span><i class="fa-solid fa-film"></i> Titles whose cast members are affected: ${new Set(issues.map(i => i.title_id)).size}</span>
+      </div>
+    </div>`;
+
+    if (allGood) {
+      body.className = "health-check-results";
+      body.innerHTML = summaryHtml + `
+      <div class="health-all-good">
+        <i class="fa-solid fa-circle-check"></i>
+        <div class="health-all-good-text">
+          <strong>Reverse Cast Integrity OK</strong>
+          <span>Every star in a title's cast has that title in their <code>mcu_appearances</code>.</span>
+        </div>
+      </div>`;
+    } else {
+      const rows = issues.map((issue, idx) => {
+        const reasonLabel = `<strong>${esc(issue.star_name)}</strong> is in the cast of <strong>${esc(issue.title_name)}</strong> but <code>${esc(issue.title_id)}</code> is missing from their appearances`;
+        const btns = `<button class="cast-health-fix-btn cast-fix-alt" id="rcast-fix-btn-add-${idx}"
+               onclick="fixReverseAddAppearance('${esc(issue.star_id)}','${esc(issue.title_id)}',${idx})">
+               <i class="fa-solid fa-plus"></i> Add to Appearances
+             </button>
+             <button class="cast-health-fix-btn cast-fix-danger" id="rcast-fix-btn-rem-${idx}"
+               onclick="fixReverseRemoveFromCast('${esc(issue.star_id)}','${esc(issue.title_id)}',${idx})">
+               <i class="fa-solid fa-scissors"></i> Remove from Cast
+             </button>`;
+        return `
+        <div class="health-issue-row orphan" id="rcast-issue-row-${idx}">
+          <i class="fa-solid fa-user-plus health-issue-icon orphan"></i>
+          <div class="health-issue-info">
+            <span class="health-issue-text">${reasonLabel}</span>
+            <span class="health-issue-id">${esc(issue.title_id)} → ${esc(issue.star_id)}</span>
+          </div>
+          <span class="health-ds-badge mcu"><i class="fa-solid fa-film"></i> MCU</span>
+          <div class="cast-fix-btn-group">${btns}</div>
+        </div>`;
+      }).join("");
+
+      body.className = "health-check-results";
+      body.innerHTML = summaryHtml + `
+      <div class="health-issues-list cast-health-issues">${rows}</div>`;
+    }
+  } catch (e) {
+    body.className = "health-check-idle";
+    body.innerHTML = `<i class="fa-solid fa-circle-xmark txt-red"></i><span>Reverse cast health check failed: ${esc(e.message)}</span>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Run Check`; }
+  }
+}
+
+// Shared helper: mark a rcast-issue-row as resolved
+function _markRCastRowFixed(rowIdx, label) {
+  const row = document.getElementById(`rcast-issue-row-${rowIdx}`);
+  if (!row) return;
+  row.style.opacity = "0.4";
+  row.style.pointerEvents = "none";
+  const txt = row.querySelector(".health-issue-text");
+  if (txt) txt.innerHTML = `<s>${txt.innerHTML}</s> <span class="txt-green" style="font-size:11px"><i class="fa-solid fa-circle-check"></i> ${label}</span>`;
+  row.querySelectorAll(".cast-health-fix-btn").forEach(b => { b.disabled = true; b.innerHTML = `<i class="fa-solid fa-circle-check"></i>`; });
+}
+
+// Option A: add the title to the star's mcu_appearances
+async function fixReverseAddAppearance(starId, titleId, rowIdx) {
+  const btn = document.getElementById(`rcast-fix-btn-add-${rowIdx}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>`; }
+  try {
+    await api("fix_reverse_cast_appearance", { star_id: starId, title_id: titleId });
+    _SSE.notifyOwnSave();
+    _markRCastRowFixed(rowIdx, "Added to appearances");
+    toast(`Added ${titleId} to ${starId}'s appearances`, "success");
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-plus"></i> Add to Appearances`; }
+    toast("Fix failed: " + e.message, "error");
+  }
+}
+
+// Option B: remove the star from the title's cast
+async function fixReverseRemoveFromCast(starId, titleId, rowIdx) {
+  const btn = document.getElementById(`rcast-fix-btn-rem-${rowIdx}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>`; }
+  try {
+    await api("fix_reverse_cast_remove_from_cast", { star_id: starId, title_id: titleId });
+    _SSE.notifyOwnSave();
+    _markRCastRowFixed(rowIdx, "Removed from cast");
+    toast(`Removed ${starId} from cast of ${titleId}`, "success");
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-scissors"></i> Remove from Cast`; }
+    toast("Fix failed: " + e.message, "error");
+  }
+}
+
+
+
 function markDuplicateInputs(inputs) {
   inputs.forEach(inp => {
     inp.style.borderColor = "";
