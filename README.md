@@ -1,6 +1,6 @@
 # 🦸 MCU Universe
 
-**The Ultimate Marvel Tracker** — a personal MCU progress tracker and database explorer, hosted at [mcu.mahdiyasser.site](https://mcu.mahdiyasser.site).
+**The Ultimate Marvel Tracker** — a personal MCU progress tracker and database explorer, hosted at [mcu.mahdiyasser.com](https://mcu.mahdiyasser.com).
 
 > ⚠️ **Data Status (as of 2026-04-22):** The project's UI, UX, admin dashboard, and architecture are fully complete. The data that is currently in the database has not been fully verified yet, and there are also MCU titles and cast members that are still missing from the database entirely. Work on verifying and completing the data is now actively in progress — contributors are very welcome (see [Contributing to the Data](#-contributing-to-the-data) below).
 
@@ -154,7 +154,7 @@ git clone https://github.com/Mahdiyasser/MCU ~/MCU-Project
 - **Frontend:** Vanilla HTML, CSS, and JavaScript — no frameworks, no build step.
 - **Backend (admin only):** PHP for the API (file reads/writes, SSE, image uploads).
 - **Data:** JSON files (`mcu.json`, `stars.json`, `data.json`, `app.json`).
-- **Hosting:** GitHub Pages with a custom domain (`mcu.mahdiyasser.site`).
+- **Hosting:** GitHub Pages with a custom domain (`mcu.mahdiyasser.com`).
 
 ---
 

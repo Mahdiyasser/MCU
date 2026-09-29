@@ -97,7 +97,7 @@ function _handleLogoClick() {
 let STORAGE_KEY  = 'mcu_universe_v1';   // app.json > storage.key
 let VIEW_PARAM   = 'share';             // app.json > url_params.share
 let IMPORT_PARAM = 'import';            // app.json > url_params.import
-let BASE_URL     = 'https://mcu.mahdiyasser.site/app/'; // app.json > base_url
+let BASE_URL     = 'https://mcu.mahdiyasser.com/app/'; // app.json > base_url
 // Timing constants — all driven by app.json > timings
 let TOAST_DURATION_MS    = 2200; // app.json > behaviour.toast_duration_ms
 let TOAST_FADE_MS        = 300;  // app.json > behaviour.toast_fade_ms

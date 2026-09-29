@@ -73,8 +73,8 @@ Once you're done, commit the changed JSON files and open a pull request. Briefly
 
 If you'd like to coordinate directly, discuss what to work on, or just get in touch:
 
-- 🌐 [mahdiyasser.site/contact](https://mahdiyasser.site/contact)
-- 📧 [mahdi@mahdiyasser.site](mailto:mahdi@mahdiyasser.site)
+- 🌐 [mahdiyasser.com/contact](https://mahdiyasser.com/contact)
+- 📧 [mahdi@mahdiyasser.com](mailto:mahdi@mahdiyasser.com)
 
 Don't hesitate to reach out — all help is appreciated.
 ---

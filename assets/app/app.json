@@ -25,7 +25,7 @@
         "share": "share",
         "import": "import"
     },
-    "base_url": "https://mcu.mahdiyasser.site/app/",
+    "base_url": "https://mcu.mahdiyasser.com/app/",
     "behaviour": {
         "loader_min_delay_ms": 600,
         "toast_duration_ms": 2200,
@@ -750,7 +750,7 @@
         "links": [
             {
                 "label": "Website",
-                "url": "https://mahdiyasser.site",
+                "url": "https://mahdiyasser.com",
                 "icon_fa": "fa-solid fa-house",
                 "style": ""
             },
@@ -768,7 +768,7 @@
             },
             {
                 "label": "Contact",
-                "url": "https://mahdiyasser.site/contact/",
+                "url": "https://mahdiyasser.com/contact/",
                 "icon_fa": "fa-solid fa-envelope",
                 "style": ""
             }
